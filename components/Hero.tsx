@@ -14,13 +14,13 @@ export default function Hero() {
     >
       <Header />
 
-      <div className="absolute inset-0 flex items-center justify-center px-3 pt-24 pb-24 md:px-8 md:pt-28 md:pb-28">
-        <div className="h-[70vh] w-full max-w-[1600px] md:h-[78vh]">
-          <AsciiWordmark lines={["MAIN", "CHARACTER"]} />
+      <div className="absolute inset-0 flex items-center justify-center px-3 pt-20 pb-40 md:px-8 md:pt-28 md:pb-28">
+        <div className="h-[50vh] w-full max-w-[1600px] md:h-[78vh]">
+          <AsciiWordmark lines={["MAIN", "CHARACTER"]} cellMin={8} />
         </div>
       </div>
 
-      <div className="absolute right-6 bottom-6 left-6 grid grid-cols-1 gap-6 md:right-10 md:bottom-10 md:left-10 md:grid-cols-12 md:gap-8">
+      <div className="absolute right-6 bottom-8 left-6 grid grid-cols-1 gap-4 md:right-10 md:bottom-10 md:left-10 md:grid-cols-12 md:gap-8">
         <div className="md:col-span-4">
           <p className="font-mono text-[11px] leading-snug tracking-[0.18em] uppercase md:text-xs">
             Service &amp; Product

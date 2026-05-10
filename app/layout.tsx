@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { VT323, IBM_Plex_Mono } from "next/font/google";
+import { VT323, Inter, Outfit, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 
 const pixel = VT323({
@@ -9,8 +9,19 @@ const pixel = VT323({
   display: "swap",
 });
 
-const mono = IBM_Plex_Mono({
-  weight: ["400", "500", "700"],
+const sans = Inter({
+  subsets: ["latin"],
+  variable: "--font-sans",
+  display: "swap",
+});
+
+const display = Outfit({
+  subsets: ["latin"],
+  variable: "--font-display",
+  display: "swap",
+});
+
+const mono = JetBrains_Mono({
   subsets: ["latin"],
   variable: "--font-mono",
   display: "swap",
@@ -89,7 +100,7 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${pixel.variable} ${mono.variable}`}>
+    <html lang="en" className={`${pixel.variable} ${mono.variable} ${sans.variable} ${display.variable}`}>
       <body className="min-h-dvh antialiased">
         <script
           type="application/ld+json"
