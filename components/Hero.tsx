@@ -14,8 +14,8 @@ export default function Hero() {
     >
       <Header />
 
-      <div className="absolute inset-0 flex items-center justify-center px-3 pt-20 pb-40 md:px-8 md:pt-28 md:pb-28">
-        <div className="h-[50vh] w-full max-w-[1600px] md:h-[78vh]">
+      <div className="absolute inset-0 flex items-center justify-center px-3 pt-16 pb-32 md:px-8 md:pt-28 md:pb-28">
+        <div className="h-[36vh] w-full max-w-[1600px] md:h-[78vh]">
           <AsciiWordmark lines={["MAIN", "CHARACTER"]} cellMin={8} />
         </div>
       </div>
