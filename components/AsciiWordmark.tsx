@@ -15,6 +15,7 @@ type Props = {
   className?: string;
   cellMin?: number;
   cellMax?: number;
+  partyMode?: boolean;
 };
 
 type StopMode = "idle" | "blast" | "return";
@@ -61,19 +62,40 @@ type Spark = {
 /** age < 0 = scheduled but not yet visible (used for aftershock delay). */
 type Wave = { x: number; y: number; age: number };
 
+type Confetti = {
+  x: number; y: number;
+  vx: number; vy: number;
+  rotation: number;
+  rotationSpeed: number;
+  w: number; h: number;
+  color: string;
+  age: number;
+  maxAge: number;
+};
+
 const GRAVITY = 0.34;
 const WAVE_MAX_AGE = 22;
 /** Cursor pull radius in CSS px — glyphs drift toward cursor within this zone. */
 const PULL_R = 78;
+
+const CONFETTI_COLORS = [
+  "#ff0088", "#ff4400", "#ffcc00", "#00ff88", "#00ccff",
+  "#8800ff", "#ff00ff", "#ff6600", "#00ffcc", "#ffff00",
+  "#ff2244", "#44ff22", "#2255ff", "#ff22cc", "#22ffee",
+  "#ffffff", "#ffdd00", "#ff88cc",
+];
 
 export default function AsciiWordmark({
   lines = ["MAIN", "CHARACTER"],
   className = "",
   cellMin = 16,
   cellMax = 26,
+  partyMode = false,
 }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const rafRef = useRef<number | null>(null);
+  const partyModeRef = useRef(partyMode);
+  partyModeRef.current = partyMode;
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -90,6 +112,7 @@ export default function AsciiWordmark({
     let edge: Stop[] = [];
     const sparks: Spark[] = [];
     const waves: Wave[] = [];
+    const confetti: Confetti[] = [];
     let frame = 0;
 
     const pointer = { active: false, x: 0, y: 0 };
@@ -227,6 +250,7 @@ export default function AsciiWordmark({
       ctx.imageSmoothingEnabled = false;
       sparks.length = 0;
       waves.length = 0;
+      confetti.length = 0;
       buildMaskAndStops();
       draw();
     };
@@ -241,6 +265,12 @@ export default function AsciiWordmark({
       const glyphSize = Math.max(16, cellPx + 6);
       ctx.font = `${glyphSize}px "VT323", ui-monospace, monospace`;
       ctx.fillStyle = "#ffffff";
+
+      const isParty = partyModeRef.current;
+
+      /** Returns an HSL color string for a given grid position in party mode. */
+      const partyHue = (ox: number, oy: number) =>
+        ((ox / width) * 300 + (oy / height) * 60 + frame * 1.5) % 360;
 
       const glyph = (ch: string, x: number, y: number, a: number) => {
         if (a < 0.007 || !ch) return;
@@ -290,6 +320,15 @@ export default function AsciiWordmark({
         const ix = (s.ox + s.px + 0.5) | 0;
         const iy = (s.oy + s.py + 0.5) | 0;
 
+        /* party LED color — set per-stop so every glyph call below inherits it */
+        if (isParty) {
+          const h = partyHue(s.ox, s.oy);
+          const l = s.edge ? 72 : 60;
+          ctx.fillStyle = `hsl(${h}, 100%, ${l}%)`;
+        } else {
+          ctx.fillStyle = "#ffffff";
+        }
+
         if (s.mode === "blast") {
           let ch: string;
           if (s.blastAge < 20) {
@@ -331,6 +370,9 @@ export default function AsciiWordmark({
         }
       }
 
+      /* reset fill to white for sparks/ash (or party-cycle for sparks too) */
+      ctx.fillStyle = "#ffffff";
+
       /* spark + ash particles */
       for (const sp of sparks) {
         const t = 1 - sp.age / sp.maxAge;
@@ -338,9 +380,28 @@ export default function AsciiWordmark({
           const ch = ASH_CHARS[Math.floor(sp.age * 0.07) % ASH_CHARS.length];
           glyph(ch, (sp.x + 0.5) | 0, (sp.y + 0.5) | 0, t * 0.45);
         } else {
+          if (isParty) {
+            const h = (frame * 8 + sp.age * 15) % 360;
+            ctx.fillStyle = `hsl(${h}, 100%, 65%)`;
+          }
           const ch = FIRE_CHARS[Math.floor(sp.age * 0.55 + frame * 0.2) % FIRE_CHARS.length];
           glyph(ch, (sp.x + 0.5) | 0, (sp.y + 0.5) | 0, t * t * 0.95);
+          if (isParty) ctx.fillStyle = "#ffffff";
         }
+      }
+
+      /* confetti pieces (party mode only) */
+      for (const c of confetti) {
+        const t = 1 - c.age / c.maxAge;
+        const alpha = Math.min(1, t * 4) * t;
+        if (alpha < 0.01) continue;
+        ctx.save();
+        ctx.globalAlpha = alpha;
+        ctx.fillStyle = c.color;
+        ctx.translate(c.x, c.y);
+        ctx.rotate(c.rotation);
+        ctx.fillRect(-c.w / 2, -c.h / 2, c.w, c.h);
+        ctx.restore();
       }
     };
 
@@ -496,6 +557,44 @@ export default function AsciiWordmark({
       }
     };
 
+    /* ─── confetti ────────────────────────────────────────────────── */
+    const tickConfetti = () => {
+      for (let i = confetti.length - 1; i >= 0; i--) {
+        const c = confetti[i];
+        c.vy += 0.22;
+        c.vx += Math.sin(c.age * 0.12) * 0.06;
+        c.vx *= 0.99;
+        c.vy *= 0.99;
+        c.x += c.vx;
+        c.y += c.vy;
+        c.rotation += c.rotationSpeed;
+        c.age++;
+        if (c.age >= c.maxAge || c.y > height + 30) confetti.splice(i, 1);
+      }
+    };
+
+    const spawnConfetti = (cx: number, cy: number) => {
+      const count = 90;
+      for (let i = 0; i < count; i++) {
+        const ang = Math.random() * Math.PI * 2;
+        const spd = 2 + Math.random() * 16;
+        const color = CONFETTI_COLORS[Math.floor(Math.random() * CONFETTI_COLORS.length)];
+        confetti.push({
+          x: cx + (Math.random() - 0.5) * 24,
+          y: cy + (Math.random() - 0.5) * 24,
+          vx: Math.cos(ang) * spd,
+          vy: Math.sin(ang) * spd - 7,
+          rotation: Math.random() * Math.PI * 2,
+          rotationSpeed: (Math.random() - 0.5) * 0.35,
+          w: 5 + Math.random() * 10,
+          h: 3 + Math.random() * 5,
+          color,
+          age: 0,
+          maxAge: 90 + Math.floor(Math.random() * 70),
+        });
+      }
+    };
+
     /* ─── shockwaves ──────────────────────────────────────────────── */
     const tickWaves = () => {
       for (let i = waves.length - 1; i >= 0; i--) {
@@ -506,13 +605,22 @@ export default function AsciiWordmark({
 
     /* ─── spawn blast ─────────────────────────────────────────────── */
     const spawnBlast = (cx: number, cy: number) => {
+      const blastR = Math.max(width, height) * 0.10;
+
+      /* pre-check: is there at least one glyph inside the blast radius?
+         If the click lands on empty space, do nothing. */
+      const allStops: Stop[] = (inner as Stop[]).concat(edge);
+      const anyHit = allStops.some((s) => {
+        const dist = Math.hypot(s.ox - cx, s.oy - cy);
+        return (1 - dist / blastR) >= 0.02;
+      });
+      if (!anyHit) return;
+
       /* primary shockwave + aftershock ring (delayed 8 frames) */
       if (waves.length < 8) {
         waves.push({ x: cx, y: cy, age: 0 });
         waves.push({ x: cx, y: cy, age: -8 });
       }
-
-      const blastR = Math.max(width, height) * 0.10;
 
       const kick = (list: Stop[]) => {
         for (let i = 0; i < list.length; i++) {
@@ -525,12 +633,12 @@ export default function AsciiWordmark({
 
           const nx = dx / dist;
           const ny = dy / dist;
-          const power = t * t * 32 + 6;
-          s.vx += nx * power + (Math.random() - 0.5) * 5;
-          s.vy += ny * power - t * 14;
-          s.windX = (Math.random() - 0.5) * 0.16;
-          s.turbX = (Math.random() - 0.5) * 1.2;
-          s.turbY = (Math.random() - 0.5) * 1.2;
+          const power = t * t * 14 + 3;
+          s.vx += nx * power + (Math.random() - 0.5) * 2;
+          s.vy += ny * power - t * 6;
+          s.windX = (Math.random() - 0.5) * 0.07;
+          s.turbX = (Math.random() - 0.5) * 0.5;
+          s.turbY = (Math.random() - 0.5) * 0.5;
           s.mode = "blast";
           s.blastAge = 0;
           s.chNext = null;
@@ -546,14 +654,14 @@ export default function AsciiWordmark({
       kick(edge);
 
       /* fire sparks */
-      for (let i = 0; i < 32; i++) {
+      for (let i = 0; i < 18; i++) {
         const ang = Math.random() * Math.PI * 2;
-        const spd = 2.5 + Math.random() * 11;
+        const spd = 1.5 + Math.random() * 5;
         sparks.push({
           x: cx + (Math.random() - 0.5) * cellPx,
           y: cy + (Math.random() - 0.5) * cellPx,
           vx: Math.cos(ang) * spd,
-          vy: Math.sin(ang) * spd - 5.5,
+          vy: Math.sin(ang) * spd - 2.5,
           age: 0,
           maxAge: 38 + Math.floor(Math.random() * 42),
           isAsh: false,
@@ -580,6 +688,7 @@ export default function AsciiWordmark({
       if (!reducedMotion) {
         tickWaves();
         tickSparks();
+        tickConfetti();
         integrateSprings(inner);
         integrateSprings(edge);
       }
@@ -670,7 +779,11 @@ export default function AsciiWordmark({
       pointer.x = x;
       pointer.y = y;
       pointer.active = true;
-      spawnBlast(x, y);
+      if (partyModeRef.current) {
+        spawnConfetti(x, y);
+      } else {
+        spawnBlast(x, y);
+      }
     };
 
     const parent = trackEl();

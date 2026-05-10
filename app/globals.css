@@ -41,3 +41,80 @@ body {
     transform: translateY(0);
   }
 }
+
+/* ── Party mode ───────────────────────────────────────────────── */
+@keyframes party-cw {
+  to { transform: rotate(360deg); }
+}
+@keyframes party-ccw {
+  to { transform: rotate(-360deg); }
+}
+@keyframes party-blob-a {
+  0%, 100% { opacity: 0.55; transform: scale(1); }
+  50%       { opacity: 0.9;  transform: scale(1.14); }
+}
+@keyframes party-blob-b {
+  0%, 100% { opacity: 0.5;  transform: scale(1.06); }
+  50%       { opacity: 0.82; transform: scale(0.9); }
+}
+@keyframes party-blob-c {
+  0%, 100% { opacity: 0.45; transform: scale(1) translateX(0); }
+  33%       { opacity: 0.75; transform: scale(1.1) translateX(-6%); }
+  66%       { opacity: 0.6;  transform: scale(0.95) translateX(4%); }
+}
+@keyframes party-btn-shimmer {
+  from { background-position: 200% center; }
+  to   { background-position: -200% center; }
+}
+@keyframes party-btn-pulse {
+  0%, 100% { box-shadow: 0 0 12px 2px rgba(255,0,200,0.55), 0 0 28px 6px rgba(0,200,255,0.35); }
+  50%       { box-shadow: 0 0 22px 6px rgba(180,0,255,0.7),  0 0 48px 12px rgba(0,255,180,0.4); }
+}
+
+/* ── Disco Dancer ──────────────────────────────────────────── */
+@keyframes dancer-bob {
+  0%, 100% { transform: translateY(0px) rotate(-1deg); }
+  50%       { transform: translateY(-5px) rotate(1deg); }
+}
+@keyframes dancer-shake {
+  0%   { transform: translate(0px,  0px) rotate(0deg); }
+  20%  { transform: translate(-3px, -5px) rotate(-4deg); }
+  40%  { transform: translate(3px,  -8px) rotate(4deg); }
+  60%  { transform: translate(-2px, -5px) rotate(-3deg); }
+  80%  { transform: translate(2px,  -7px) rotate(3deg); }
+  100% { transform: translate(0px,  0px) rotate(0deg); }
+}
+@keyframes dancer-rainbow-text {
+  0%   { color: hsl(0,   100%, 74%); text-shadow: 0 0 10px hsl(0,   100%, 60%), 0 0 20px hsl(0,   100%, 40%); }
+  16%  { color: hsl(60,  100%, 74%); text-shadow: 0 0 10px hsl(60,  100%, 60%), 0 0 20px hsl(60,  100%, 40%); }
+  33%  { color: hsl(120, 100%, 74%); text-shadow: 0 0 10px hsl(120, 100%, 60%), 0 0 20px hsl(120, 100%, 40%); }
+  50%  { color: hsl(180, 100%, 74%); text-shadow: 0 0 10px hsl(180, 100%, 60%), 0 0 20px hsl(180, 100%, 40%); }
+  66%  { color: hsl(240, 100%, 74%); text-shadow: 0 0 10px hsl(240, 100%, 60%), 0 0 20px hsl(240, 100%, 40%); }
+  83%  { color: hsl(300, 100%, 74%); text-shadow: 0 0 10px hsl(300, 100%, 60%), 0 0 20px hsl(300, 100%, 40%); }
+  100% { color: hsl(360, 100%, 74%); text-shadow: 0 0 10px hsl(360, 100%, 60%), 0 0 20px hsl(360, 100%, 40%); }
+}
+@keyframes note-0 {
+  0%   { opacity: 0; transform: translate(-18px, 0px) scale(0.8); }
+  15%  { opacity: 1; }
+  100% { opacity: 0; transform: translate(-38px, -68px) scale(1.2); }
+}
+@keyframes note-1 {
+  0%   { opacity: 0; transform: translate(14px, 0px) scale(0.8); }
+  15%  { opacity: 1; }
+  100% { opacity: 0; transform: translate(32px, -62px) scale(1.2); }
+}
+@keyframes note-2 {
+  0%   { opacity: 0; transform: translate(26px, 0px) scale(0.8); }
+  15%  { opacity: 1; }
+  100% { opacity: 0; transform: translate(52px, -70px) scale(1.1); }
+}
+@keyframes note-3 {
+  0%   { opacity: 0; transform: translate(-24px, 0px) scale(0.8); }
+  15%  { opacity: 1; }
+  100% { opacity: 0; transform: translate(-48px, -58px) scale(1.2); }
+}
+@keyframes note-4 {
+  0%   { opacity: 0; transform: translate(4px, 0px) scale(0.8); }
+  15%  { opacity: 1; }
+  100% { opacity: 0; transform: translate(14px, -75px) scale(1.1); }
+}
