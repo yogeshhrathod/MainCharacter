@@ -29,6 +29,8 @@ const mono = JetBrains_Mono({
 
 const SITE_URL = "https://maincharacter.one";
 
+const basePath = process.env.BASE_PATH?.trim() ?? "";
+
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
@@ -76,7 +78,7 @@ export const metadata: Metadata = {
       "max-video-preview": -1,
     },
   },
-  icons: { icon: "/favicon.svg" },
+  icons: { icon: `${basePath}/favicon.svg` },
 };
 
 export const viewport: Viewport = {
