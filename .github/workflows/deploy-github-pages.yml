@@ -1,3 +1,6 @@
+# Publishes the static `out/` folder to GitHub Pages.
+# Requires Pages enabled (Settings → Pages → GitHub Actions). On a free
+# account, Pages is available for public repos; private repos need a paid plan.
 name: Deploy to GitHub Pages
 
 on:
