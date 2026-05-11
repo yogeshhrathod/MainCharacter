@@ -114,6 +114,11 @@ export default function AsciiWordmark({
     const waves: Wave[] = [];
     const confetti: Confetti[] = [];
     let frame = 0;
+    /* Party transition progress: 0 = off, 1 = fully on.
+     * Mirrors DiscoCanvas timing: 4 s in (1/240 / frame), 1.5 s out (1/90 / frame).
+     * Text coloring begins at progress 0.625 (beat 6) so the
+     * environment lights up first, then the letters follow. */
+    let partyProgress = 0;
 
     const pointer = { active: false, x: 0, y: 0 };
 
@@ -266,9 +271,17 @@ export default function AsciiWordmark({
       ctx.font = `${glyphSize}px "VT323", ui-monospace, monospace`;
       ctx.fillStyle = "#ffffff";
 
-      const isParty = partyModeRef.current;
+      const isParty = partyProgress > 0.005;
 
-      /** Returns an HSL color string for a given grid position in party mode. */
+      /**
+       * Text-reveal sweep threshold for a given stop.
+       * Coloring starts at partyProgress 0.625 (beat 6) and finishes at 1.0.
+       * MAIN (lower oy fraction) leads CHARACTER by ~10% of width.
+       * On exit the sweep reverses automatically (progress counts back down).
+       */
+      const textReveal = Math.max(0, (partyProgress - 0.625) / 0.375);
+
+      /** Hue for a stop position — slow rainbow wave sweeping left→right. */
       const partyHue = (ox: number, oy: number) =>
         ((ox / width) * 300 + (oy / height) * 60 + frame * 1.5) % 360;
 
@@ -320,11 +333,16 @@ export default function AsciiWordmark({
         const ix = (s.ox + s.px + 0.5) | 0;
         const iy = (s.oy + s.py + 0.5) | 0;
 
-        /* party LED color — set per-stop so every glyph call below inherits it */
+        /* party LED color — revealed left→right, MAIN line leads CHARACTER */
         if (isParty) {
-          const h = partyHue(s.ox, s.oy);
-          const l = s.edge ? 72 : 60;
-          ctx.fillStyle = `hsl(${h}, 100%, ${l}%)`;
+          const oyOffset  = (s.oy / height) * 0.22;
+          const threshold = Math.max(0, textReveal - oyOffset) * 1.30;
+          if ((s.ox / width) < threshold) {
+            const h = partyHue(s.ox, s.oy);
+            ctx.fillStyle = `hsl(${h}, 100%, ${s.edge ? 72 : 60}%)`;
+          } else {
+            ctx.fillStyle = "#ffffff";
+          }
         } else {
           ctx.fillStyle = "#ffffff";
         }
@@ -685,6 +703,15 @@ export default function AsciiWordmark({
     /* ─── main loop ───────────────────────────────────────────────── */
     const loop = () => {
       frame++;
+
+      /* Advance partyProgress to match DiscoCanvas timing exactly */
+      const partyTarget = partyModeRef.current ? 1 : 0;
+      if (partyTarget > partyProgress) {
+        partyProgress = Math.min(1, partyProgress + 1 / 240); /* 4 s in  */
+      } else if (partyTarget < partyProgress) {
+        partyProgress = Math.max(0, partyProgress - 1 / 90);  /* 1.5 s out */
+      }
+
       if (!reducedMotion) {
         tickWaves();
         tickSparks();
@@ -701,6 +728,7 @@ export default function AsciiWordmark({
     const freezeForReducedMotion = () => {
       sparks.length = 0;
       waves.length = 0;
+      partyProgress = partyModeRef.current ? 1 : 0;
       const snap = (list: Stop[]) => {
         for (let i = 0; i < list.length; i++) {
           const s = list[i];

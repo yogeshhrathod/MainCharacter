@@ -2,73 +2,121 @@
 
 import { useState, useEffect } from "react";
 
-/* ─────────────────────────────────────────────────────────────
-   39-frame kaomoji disco dancer.
-   Arms: └┘  ヽノ  \\/ <> ᕦᕤ ٩۶  etc.
-   Faces: •̀ᴗ•́  ⌐■_■  °ᗜ°  ᵔ◡ᵔ  ≧ᴗ≦  ò_ó  ^ω^  °o°
-   Legs:  d b  | |  / \  \\ \\  / /  ^ ^  \\_/
-───────────────────────────────────────────────────────────── */
-const FRAMES = [
-  // ── Entrance / main character ─────────────────────────────
-  "  |=|\n└(•̀ᴗ•́)┘\n  d b",           //  0  classic stance
-  "  |=|\n\\(•̀ᴗ•́)/\n  d b",           //  1  arms wide up
-  "  |=|\nヽ(•̀ᴗ•́)ノ\n  d b",          //  2  hands raised
-  "  |=|\n└(⌐■_■)┘\n  d b",            //  3  sunglasses cool
-  "  ★\n└(⌐■_■)ノ\n  d b",             //  4  sunglasses point
+/*
+  Beat-synced choreography dancer.
 
-  // ── Groove left & right ───────────────────────────────────
-  " ♪\nヾ(•̀ᴗ•́) \n   d b",            //  5  lean left wave
-  "    ♪\n (•̀ᴗ•́)ノ\n  d b",           //  6  lean right wave
-  "  ♪\n└(°ᗜ°)┘\n  b d",              //  7  happy bounce
-  " ♫\nヽ(°ᗜ°)ノ\n  d b",              //  8  ecstatic arms
-  "  ♪\n└(ᵔ◡ᵔ)┘\n  d b",             //  9  sweet groove
-  "  ♫\n└(≧ᴗ≦)┘\n  d b",             // 10  intense happy
-  " ♪\n└(•̀ᴗ•́)┘\n  b d",             // 11  feet swap bounce
+  Each entry: [art, beatFraction]
+    beatFraction × (60 000 / bpm) = ms to hold this frame
 
-  // ── Arm wave sequence ─────────────────────────────────────
-  " ♫\n٩(•̀ᴗ•́)۶\n  ^ ^",             // 12  both arms explode
-  "  ~\nヾ(•̀ᴗ•́)ノ\n   b",             // 13  wave right
-  " ~\nヽ(•̀ᴗ•́)ゞ\n b  ",             // 14  wave left
-  "  ♫\n└(^ω^)ノ\n  d b",             // 15  music toss
+  Party mode : 128 BPM  → 1 beat ≈ 469 ms
+  Chill mode :  75 BPM  → 1 beat ≈ 800 ms
 
-  // ── Character power moves ─────────────────────────────────
-  " ★★\n└(⌐■_■)ノ\n  d b",            // 16  sunglasses point
-  "  ★\nᕦ(ò_óˇ)ᕤ\n  | |",            // 17  flex biceps!
-  " ✦\n(ง •̀_•́)ง\n  | |",            // 18  fighting spirit
-  " ✦\n( •̀ᴗ•́)و\n  d b",             // 19  fist pump
-  "   ~\nヽ(⌐■_■)ノ\n  d b",           // 20  too-cool spin
+  Emotional arc per loop (~36 beats ≈ 9 bars):
+    Phase 1 · INTRO       — eyes closed, just vibing, slow holds
+    Phase 2 · FEELING IT  — wakes up, starts grooving
+    Phase 3 · BUILD       — energy rising, quick cuts
+    Phase 4 · THE DROP    — loses their mind (fastest frames)
+    Phase 5 · SWAGGER     — sunglasses, moonwalk, main character
+    Phase 6 · WIND DOWN   — eyes close again, loop
+*/
+type Step = [art: string, beats: number];
 
-  // ── Jump sequence ─────────────────────────────────────────
-  "  !\nヽ(°o°)ノ\n  \\_/",            // 21  crouch & gasp
-  "↑↑\n\\(°ᗜ°)/\n   ↑",              // 22  LAUNCH!
-  " ★\n\\(°ᗜ°)/\n  / \\",             // 23  peak spread-eagle
-  "  !\nヽ(°ᗜ°)ノ\n  \\_/",            // 24  land crouch
-  " ♪\nヽ(•̀ᴗ•́)ノ\n  d b",            // 25  bounce recovery
+const CHOREO: Step[] = [
 
-  // ── Pointing all directions ───────────────────────────────
-  " ★\nヽ(•̀ᴗ•́)>\n  d b",             // 26  point right
-  "↑\n└(•̀ᴗ•́)┘\n  d b",              // 27  point up
-  " ★\n<(•̀ᴗ•́)ノ\n  d b",             // 28  point left
-  " ✦\n(•̀ᴗ•́)b\n  | |",              // 29  thumbs up
-  " ✌\n└(^ω^)┘\n  d b",              // 30  peace sign ✌
+  // ─────────────────────────────────────────
+  // Phase 1 · INTRO  (8 beats — smooth, slow)
+  // ─────────────────────────────────────────
+  // Eyes closed. Not trying. Just feeling it.
+  ["        \n( - ᴗ - )\n   d  b ",  2.0],
+  // One eye opens. Head tilts.
+  ["   ♩    \n┌( ˘ᴗ˘)┘\n   d  b ",  1.0],
+  // Both eyes. Gentle sway other way.
+  ["   ♩    \n└(˘ᴗ˘ )┐\n   d  b ",  1.0],
+  // Sunglasses materialise. LONG HOLD — this is the moment.
+  ["   ★    \n└(⌐■ᴗ■)┘\n   d  b ",  2.0],
+  // Running-man swagger walk.
+  ["   ★    \n ᕕ(⌐■_■)ᕗ\n   d  d ",  1.0],
+  // Cool point into the crowd.
+  ["   ★    \n └(⌐■_■)ノ\n   d  b ",  1.0],
 
-  // ── Hip shakes ────────────────────────────────────────────
-  "  ♪\nヽ(•̀ᴗ•́)┘\n  / \\",           // 31  hip R
-  "  ♪\n└(•̀ᴗ•́)ノ\n  / \\",           // 32  hip L
-  "  !\nヽ(•̀ᴗ•́)ノ\n  > \\",           // 33  kick right
-  "  !\nヽ(•̀ᴗ•́)ノ\n  / <",           // 34  kick left
+  // ─────────────────────────────────────────
+  // Phase 2 · FEELING IT  (6 beats)
+  // ─────────────────────────────────────────
+  // Half-beat sways, left/right/left/right — finding the pocket.
+  [" ♪      \n ヾ(•̀ᴗ•́) \n    d b ",  0.5],
+  ["     ♪  \n  (•̀ᴗ•́)ノ\n   d b  ",  0.5],
+  [" ♪      \n ヾ(•̀ᴗ•́) \n    d b ",  0.5],
+  ["     ♪  \n  (•̀ᴗ•́)ノ\n   d b  ",  0.5],
+  // On the downbeat: arms shoot up.
+  ["  ♫     \n ヽ(•̀ᴗ•́)ノ\n   d  b ",  1.0],
+  // Feet swap — offbeat syncopation.
+  ["  ♫     \n └(•̀ᴗ•́)┘\n   b  d ",  0.5],
+  ["  ♫     \n └(•̀ᴗ•́)┘\n   d  b ",  0.5],
+  // Joy rising — face opens up.
+  ["  ♫     \n ヽ(°ᗜ°)ノ \n   d  b ",  1.5],
 
-  // ── Moonwalk ──────────────────────────────────────────────
-  "\nヽ(⌐■_■)┘\n  \\ \\",             // 35  moonwalk 1
-  "\nヽ(⌐■_■)┘\n  / /",              // 36  moonwalk 2
-  "\n└(⌐■_■)ノ\n  \\ \\",             // 37  moonwalk 3
-  "\n└(⌐■_■)ノ\n  / /",              // 38  moonwalk 4
+  // ─────────────────────────────────────────
+  // Phase 3 · BUILD  (5 beats — hype rising)
+  // ─────────────────────────────────────────
+  // Excited face, quick pulses.
+  ["  ✦     \n ٩(˃ᗜ˂)۶ \n   ^ ^  ",  0.5],
+  [" ✦✦     \n ٩(˃ᗜ˂)۶ \n   ^ ^  ",  0.5],
+  // OH — the drop is coming. Face of pure realisation.
+  ["  ✦✦    \n ヽ(°∀°)ノ \n   ^ ^  ",  0.5],
+  [" ✦✦✦   \n ヽ(°∀°)ノ \n   ^ ^  ",  0.5],
+  // FLEX — because why not.
+  ["   !    \n ᕦ(ò_óˇ)ᕤ\n   | |  ",  1.0],
+  // Fighter spirit — brace for impact.
+  ["   !    \n (ง •̀_•́)ง\n   | |  ",  1.0],
+  // CROUCH. Here. It. Comes.
+  ["  !!!   \n ヽ(°o°ˋ)ノ\n   \\_/  ",  1.0],
 
-  // ── Grand finale ──────────────────────────────────────────
-  "★✦★\n\\(⌐■_■)/\n  | |",           // 39  MC victory pose
-  "✦★✦\nヽ(°ᗜ°)ノ\n  ^ ^",           // 40  pure ecstasy
-  "♪✦♫\n٩(•̀ᴗ•́)۶\n  ^ ^",           // 41  music explosion
-  "  ✦\n└(•̀ᴗ•́)┘\n  d b",           // 42  back to cool
+  // ─────────────────────────────────────────
+  // Phase 4 · THE DROP  (~4 beats — chaos)
+  // ─────────────────────────────────────────
+  // LAUNCH — fastest frame in the whole loop.
+  ["  ↑↑↑   \n \\(°ᗜ°)/ \n    ↑   ",  0.25],
+  // STAR EYES — mid-air.
+  [" ★★★    \n \\(★ᗜ★)/ \n   ^ ^  ",  0.5],
+  // PURE JOY — peak height.
+  [" ✦✦✦   \n ٩(≧▽≦)۶ \n   ^ ^  ",  0.5],
+  // Flash back to stars.
+  [" ★★★    \n \\(★ᗜ★)/ \n   ^ ^  ",  0.5],
+  // Still going.
+  [" ✦★✦   \n ٩(≧▽≦)۶ \n   ^ ^  ",  0.5],
+  // Land! Legs buckle.
+  ["   !!   \n ヽ(≧▽≦)ノ\n   \\_/  ",  0.5],
+  // Still bouncing — can't stop.
+  ["  ♫♪    \n ヽ(°ᗜ°)ノ \n   ^ ^  ",  1.0],
+
+  // ─────────────────────────────────────────
+  // Phase 5 · SWAGGER  (8 beats — main char)
+  // ─────────────────────────────────────────
+  // Sunglasses back on. LONG HOLD. This is the walk-off.
+  ["   ★    \n└(⌐■_■)┘ \n   d  b ",  2.0],
+  // Running man / moonwalk — ultimate cool.
+  ["   ★    \n ᕕ(⌐■_■)ᕗ\n   d  d ",  1.0],
+  // Moonwalk steps — sunglasses the whole time.
+  ["\n ヽ(⌐■_■)┘\n   \\ \\  ",  0.5],
+  ["\n └(⌐■_■)ノ\n   / /  ",  0.5],
+  ["\n ヽ(⌐■_■)┘\n   \\ \\  ",  0.5],
+  ["\n └(⌐■_■)ノ\n   / /  ",  0.5],
+  // Peace. Because they earned it.
+  ["  ✌     \n └(^ω^)┘ \n   d  b ",  1.0],
+  // Sunglasses one last time. Big hold.
+  ["   ★    \n└(⌐■_■)┘ \n   d  b ",  2.0],
+
+  // ─────────────────────────────────────────
+  // Phase 6 · WIND DOWN  (5 beats — breathe)
+  // ─────────────────────────────────────────
+  // Arms float down.
+  ["   ♩    \n ヽ(˘ᴗ˘)ノ \n   d  b ",  1.0],
+  // Settle.
+  ["   ♩    \n └(˘ᴗ˘)┘ \n   d  b ",  1.0],
+  // Eyes close again. Ready to loop.
+  ["        \n( - ᴗ - )\n   d  b ",  2.0],
+  // One last breath — then it starts again.
+  ["   ♩    \n ( ˘ᴗ˘ )  \n   d  b ",  1.0],
 ];
 
 const FLOAT_NOTES = [
@@ -82,14 +130,21 @@ const FLOAT_NOTES = [
 export default function DiscoDancer({ party }: { party: boolean }) {
   const [frame, setFrame] = useState(0);
 
+  // Each frame schedules the next with its own beat-fraction duration.
+  // When `party` changes mid-frame, the effect re-fires with the new BPM.
   useEffect(() => {
-    const ms = party ? 115 : 340;
-    const id = setInterval(() => setFrame((f) => (f + 1) % FRAMES.length), ms);
-    return () => clearInterval(id);
-  }, [party]);
+    const bpm     = party ? 128 : 75;
+    const beatMs  = 60_000 / bpm;
+    const holdMs  = Math.round(CHOREO[frame][1] * beatMs);
+    const id      = setTimeout(() => setFrame((f) => (f + 1) % CHOREO.length), holdMs);
+    return () => clearTimeout(id);
+  }, [frame, party]);
+
+  const art = CHOREO[frame][0];
 
   return (
     <div className="relative flex flex-col items-center pointer-events-none select-none">
+      {/* Floating notes — party mode only */}
       {party &&
         FLOAT_NOTES.map((n, i) => (
           <span
@@ -107,25 +162,36 @@ export default function DiscoDancer({ party }: { party: boolean }) {
           </span>
         ))}
 
+      {/*
+        key={frame} remounts the <pre> on every step so the one-shot
+        beat-pop / beat-flash animation restarts cleanly each time.
+        The continuous bob / shake rides on top of that.
+      */}
       <pre
-        className="font-mono text-[14px] leading-[1.45]"
+        key={frame}
+        className="font-mono text-[14px] leading-normal"
         style={{
           whiteSpace: "pre",
-          minWidth: "100px",
+          minWidth: "110px",
           textAlign: "center",
           animation: party
-            ? "dancer-shake 0.3s ease-in-out infinite, dancer-rainbow-text 0.65s linear infinite"
-            : "dancer-bob 1.4s ease-in-out infinite",
-          color: party
-            ? undefined
-            : "rgba(180, 160, 255, 0.7)",
+            ? [
+                "dancer-beat-flash 0.18s cubic-bezier(0.2,0,0.4,1)",
+                "dancer-shake 0.28s ease-in-out infinite 0.18s",
+                "dancer-rainbow-text 0.6s linear infinite",
+              ].join(", ")
+            : [
+                "dancer-beat-pop 0.22s cubic-bezier(0.2,0,0.4,1)",
+                "dancer-bob 1.6s ease-in-out infinite 0.22s",
+              ].join(", "),
+          color: party ? undefined : "rgba(180, 155, 255, 0.75)",
           textShadow: party
             ? undefined
-            : "0 0 12px rgba(160, 120, 255, 0.4)",
+            : "0 0 14px rgba(150, 100, 255, 0.45)",
           transition: "color 0.5s ease, text-shadow 0.5s ease",
         }}
       >
-        {FRAMES[frame]}
+        {art}
       </pre>
     </div>
   );

@@ -118,3 +118,13 @@ body {
   15%  { opacity: 1; }
   100% { opacity: 0; transform: translate(14px, -75px) scale(1.1); }
 }
+
+/* beat-pop: plays once per frame change via key={frame} */
+@keyframes dancer-beat-pop {
+  0%   { transform: scale(1.12); filter: brightness(1.5); }
+  100% { transform: scale(1);    filter: brightness(1); }
+}
+@keyframes dancer-beat-flash {
+  0%   { transform: scale(1.18); filter: brightness(2) saturate(1.5); }
+  100% { transform: scale(1);    filter: brightness(1) saturate(1); }
+}

@@ -4,6 +4,7 @@ import { useState } from "react";
 import Header from "@/components/Header";
 import AsciiWordmark from "@/components/AsciiWordmark";
 import DiscoCanvas from "@/components/DiscoCanvas";
+import DiscoDancer from "@/components/DiscoDancer";
 
 export default function Hero() {
   const [party, setParty] = useState(false);
@@ -27,7 +28,8 @@ export default function Hero() {
         className="absolute inset-0 pointer-events-none"
         style={{
           opacity: party ? 0 : 1,
-          transition: "opacity 0.9s ease",
+          /* linger 1 s then fade over 2 s so lights are gone by beat 4 */
+          transition: party ? "opacity 2s ease 1s" : "opacity 1.5s ease",
         }}
       >
         {/* Warm overhead key light */}
@@ -78,8 +80,8 @@ export default function Hero() {
         style={{
           background:
             "radial-gradient(ellipse 118% 108% at 50% 50%, transparent 26%, rgba(0,0,0,0.62) 60%, rgba(0,0,0,0.90) 100%)",
-          opacity: party ? 0.55 : 1,
-          transition: "opacity 0.9s ease",
+          opacity: party ? 0.45 : 1,
+          transition: party ? "opacity 3s ease" : "opacity 1.5s ease",
         }}
       />
 
@@ -112,8 +114,9 @@ export default function Hero() {
         </div>
       </div>
 
-      {/* ── Party mode button ──────────────────────────────────────── */}
-      <div className="absolute bottom-20 left-1/2 -translate-x-1/2 z-20 md:bottom-24">
+      {/* ── Disco dancer + Party mode button ──────────────────────── */}
+      <div className="absolute bottom-20 left-1/2 -translate-x-1/2 z-20 md:bottom-24 flex flex-col items-center gap-3">
+        <DiscoDancer party={party} />
         <button
           onClick={() => setParty((v) => !v)}
           className="relative font-mono text-[11px] tracking-[0.18em] uppercase px-5 py-2.5 rounded-sm overflow-hidden transition-all duration-300"
