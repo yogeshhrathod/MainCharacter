@@ -5,6 +5,7 @@ import Header from "@/components/Header";
 import AsciiWordmark from "@/components/AsciiWordmark";
 import DiscoCanvas from "@/components/DiscoCanvas";
 import DiscoDancer from "@/components/DiscoDancer";
+import { WORDMARK_LINES } from "@/components/scene";
 
 export default function Hero() {
   const [party, setParty] = useState(false);
@@ -110,7 +111,7 @@ export default function Hero() {
 
       <div className="absolute inset-0 flex items-center justify-center px-3 pt-16 pb-32 md:px-8 md:pt-28 md:pb-28">
         <div className="h-[36vh] w-full max-w-[1600px] md:h-[78vh]">
-          <AsciiWordmark lines={["MAIN", "CHARACTER"]} cellMin={8} partyMode={party} />
+          <AsciiWordmark lines={WORDMARK_LINES} cellMin={8} partyMode={party} />
         </div>
       </div>
 

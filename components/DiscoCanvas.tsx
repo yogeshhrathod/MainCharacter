@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { PARTY_SEQUENCE } from "@/components/scene";
 
 /* ── Types ──────────────────────────────────────────────────────── */
 type Dot = {
@@ -98,11 +99,11 @@ export default function DiscoCanvas({ active }: { active: boolean }) {
       /* ── 0. Advance progress ──────────────────────────────────── */
       const target = activeRef.current ? 1 : 0;
       if (target > progress) {
-        /* 4 s to fully on (240 frames) */
-        progress = Math.min(1, progress + 1 / 240);
+        /* 4 s to fully on */
+        progress = Math.min(1, progress + 1 / PARTY_SEQUENCE.enterFrames);
       } else if (target < progress) {
-        /* 1.5 s to fully off (90 frames) — quick "lights out" */
-        progress = Math.max(0, progress - 1 / 90);
+        /* 1.5 s to fully off — quick "lights out" */
+        progress = Math.max(0, progress - 1 / PARTY_SEQUENCE.exitFrames);
       }
 
       ctx.clearRect(0, 0, width, height);

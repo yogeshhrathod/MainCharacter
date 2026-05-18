@@ -1,19 +1,21 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { INTRO_COPY, INTRO_SEQUENCE } from "@/components/scene";
+import { useTimedSequence } from "@/components/useTimedSequence";
 
 const RAIN_CHARS = "|!:.'`il1/~;,";
-const INTRO_TEXT = "you are the";
 const COL_W = 14;
 
 export default function LoadingScreen({ onDone }: { onDone: () => void }) {
   const rainRef = useRef<HTMLCanvasElement>(null);
   const flashRef = useRef<HTMLDivElement>(null);
-  const [rainVisible, setRainVisible] = useState(true);
-  const [textVisible, setTextVisible] = useState(false);
   const [typedCount, setTypedCount] = useState(0);
-  const [flashActive, setFlashActive] = useState(false);
-  const [exiting, setExiting] = useState(false);
+  const phase = useTimedSequence(INTRO_SEQUENCE);
+  const rainVisible = phase === "rain";
+  const textVisible = phase === "typing";
+  const flashActive = phase === "flashlight" || phase === "exit";
+  const exiting = phase === "exit" || phase === "done";
 
   /* ── Rain canvas ─────────────────────────────────────────── */
   useEffect(() => {
@@ -86,7 +88,7 @@ export default function LoadingScreen({ onDone }: { onDone: () => void }) {
     let count = 0;
     const iv = setInterval(() => {
       setTypedCount(++count);
-      if (count >= INTRO_TEXT.length) clearInterval(iv);
+      if (count >= INTRO_COPY.length) clearInterval(iv);
     }, 78);
     return () => clearInterval(iv);
   }, [textVisible]);
@@ -167,21 +169,10 @@ export default function LoadingScreen({ onDone }: { onDone: () => void }) {
     return () => cancelAnimationFrame(rafId);
   }, [flashActive]);
 
-  /* ── Master timeline ─────────────────────────────────────── */
+  /* ── Sequence completion ─────────────────────────────────── */
   useEffect(() => {
-    const T: ReturnType<typeof setTimeout>[] = [];
-
-    T.push(setTimeout(() => setRainVisible(false), 1300));
-    T.push(setTimeout(() => setTextVisible(true),  1800));
-    T.push(setTimeout(() => {
-      setTextVisible(false);
-      setFlashActive(true);   /* black bg drops; flashlight takes over */
-    }, 3150));
-    T.push(setTimeout(() => setExiting(true), 8200));
-    T.push(setTimeout(() => onDone(),          9100));
-
-    return () => T.forEach(clearTimeout);
-  }, [onDone]);
+    if (phase === "done") onDone();
+  }, [onDone, phase]);
 
   return (
     <div
@@ -223,8 +214,8 @@ export default function LoadingScreen({ onDone }: { onDone: () => void }) {
         }}
       >
         <span className="font-sans text-2xl md:text-4xl font-bold tracking-[0.08em] text-white/80">
-          {INTRO_TEXT.slice(0, typedCount)}
-          {textVisible && typedCount < INTRO_TEXT.length && (
+          {INTRO_COPY.slice(0, typedCount)}
+          {textVisible && typedCount < INTRO_COPY.length && (
             <span className="opacity-55 animate-pulse">_</span>
           )}
         </span>

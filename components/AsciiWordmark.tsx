@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { PARTY_SEQUENCE, WORDMARK_LINES } from "@/components/scene";
 
 const ASCII_CHARS = Array.from({ length: 94 }, (_, i) =>
   String.fromCharCode(33 + i)
@@ -11,7 +12,7 @@ const EMBER_CHARS = "@#$%&*!?^~|<>";
 const ASH_CHARS = ".,`'·";
 
 type Props = {
-  lines?: string[];
+  lines?: readonly string[];
   className?: string;
   cellMin?: number;
   cellMax?: number;
@@ -86,7 +87,7 @@ const CONFETTI_COLORS = [
 ];
 
 export default function AsciiWordmark({
-  lines = ["MAIN", "CHARACTER"],
+  lines = WORDMARK_LINES,
   className = "",
   cellMin = 16,
   cellMax = 26,
@@ -96,6 +97,7 @@ export default function AsciiWordmark({
   const rafRef = useRef<number | null>(null);
   const partyModeRef = useRef(partyMode);
   partyModeRef.current = partyMode;
+  const linesKey = lines.join("\n");
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -115,7 +117,7 @@ export default function AsciiWordmark({
     const confetti: Confetti[] = [];
     let frame = 0;
     /* Party transition progress: 0 = off, 1 = fully on.
-     * Mirrors DiscoCanvas timing: 4 s in (1/240 / frame), 1.5 s out (1/90 / frame).
+     * Mirrors DiscoCanvas timing: 4 s in, 1.5 s out.
      * Text coloring begins at progress 0.625 (beat 6) so the
      * environment lights up first, then the letters follow. */
     let partyProgress = 0;
@@ -279,7 +281,11 @@ export default function AsciiWordmark({
        * MAIN (lower oy fraction) leads CHARACTER by ~10% of width.
        * On exit the sweep reverses automatically (progress counts back down).
        */
-      const textReveal = Math.max(0, (partyProgress - 0.625) / 0.375);
+      const textReveal = Math.max(
+        0,
+        (partyProgress - PARTY_SEQUENCE.textRevealStart) /
+          (1 - PARTY_SEQUENCE.textRevealStart)
+      );
 
       /** Hue for a stop position — slow rainbow wave sweeping left→right. */
       const partyHue = (ox: number, oy: number) =>
@@ -707,9 +713,15 @@ export default function AsciiWordmark({
       /* Advance partyProgress to match DiscoCanvas timing exactly */
       const partyTarget = partyModeRef.current ? 1 : 0;
       if (partyTarget > partyProgress) {
-        partyProgress = Math.min(1, partyProgress + 1 / 240); /* 4 s in  */
+        partyProgress = Math.min(
+          1,
+          partyProgress + 1 / PARTY_SEQUENCE.enterFrames
+        );
       } else if (partyTarget < partyProgress) {
-        partyProgress = Math.max(0, partyProgress - 1 / 90);  /* 1.5 s out */
+        partyProgress = Math.max(
+          0,
+          partyProgress - 1 / PARTY_SEQUENCE.exitFrames
+        );
       }
 
       if (!reducedMotion) {
@@ -827,7 +839,7 @@ export default function AsciiWordmark({
       parent?.removeEventListener("pointerleave", onPointerLeave);
       parent?.removeEventListener("pointerdown", onPointerDown);
     };
-  }, [lines, cellMin, cellMax]);
+  }, [linesKey, cellMin, cellMax]);
 
   return (
     <canvas
