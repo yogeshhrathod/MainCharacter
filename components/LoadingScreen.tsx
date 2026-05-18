@@ -7,7 +7,13 @@ import { useTimedSequence } from "@/components/useTimedSequence";
 const RAIN_CHARS = "|!:.'`il1/~;,";
 const COL_W = 14;
 
-export default function LoadingScreen({ onDone }: { onDone: () => void }) {
+export default function LoadingScreen({
+  onDone,
+  onSkip,
+}: {
+  onDone: () => void;
+  onSkip: () => void;
+}) {
   const rainRef = useRef<HTMLCanvasElement>(null);
   const flashRef = useRef<HTMLDivElement>(null);
   const [typedCount, setTypedCount] = useState(0);
@@ -236,6 +242,14 @@ export default function LoadingScreen({ onDone }: { onDone: () => void }) {
           }}
         />
       )}
+
+      <button
+        type="button"
+        onClick={onSkip}
+        className="absolute right-5 top-5 z-40 font-mono text-[11px] uppercase tracking-[0.2em] text-white/55 transition hover:text-white"
+      >
+        Skip intro
+      </button>
     </div>
   );
 }

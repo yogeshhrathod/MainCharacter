@@ -248,7 +248,23 @@ export default function AsciiWordmark({
       const parent = canvas.parentElement!;
       width = parent.clientWidth;
       height = parent.clientHeight;
-      cellPx = Math.max(cellMin, Math.min(cellMax, Math.round(width / 95)));
+      /*
+       * Small screens need fewer, larger glyph cells.
+       * If we keep the desktop density on a phone, the silhouette survives
+       * but the actual words dissolve into unreadable texture.
+       */
+      const responsiveCellMin =
+        width < 420 ? Math.max(cellMin, 12) :
+        width < 640 ? Math.max(cellMin, 10) :
+        cellMin;
+      const responsiveDensity =
+        width < 420 ? Math.round(width / 42) :
+        width < 640 ? Math.round(width / 58) :
+        Math.round(width / 95);
+      cellPx = Math.max(
+        responsiveCellMin,
+        Math.min(cellMax, responsiveDensity)
+      );
       canvas.width = Math.floor(width * dpr);
       canvas.height = Math.floor(height * dpr);
       canvas.style.width = width + "px";

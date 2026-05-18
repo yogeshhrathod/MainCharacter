@@ -13,7 +13,7 @@ export default function Hero() {
   return (
     <section
       id="top"
-      className="relative isolate min-h-dvh w-full overflow-hidden bg-[#050505] text-white"
+      className="relative isolate min-h-[100svh] w-full overflow-hidden bg-[#050505] text-white"
     >
       {/* Dot grid */}
       <div
@@ -109,55 +109,77 @@ export default function Hero() {
 
       <Header />
 
-      <div className="absolute inset-0 flex items-center justify-center px-3 pt-16 pb-32 md:px-8 md:pt-28 md:pb-28">
-        <div className="h-[36vh] w-full max-w-[1600px] md:h-[78vh]">
+      <div className="absolute inset-0 flex items-center justify-center px-3 pt-20 pb-64 md:px-8 md:pt-28 md:pb-28">
+        <div className="h-[28vh] w-full max-w-[1600px] sm:h-[34vh] md:h-[78vh]">
           <AsciiWordmark lines={WORDMARK_LINES} cellMin={8} partyMode={party} />
         </div>
       </div>
 
-      {/* ── Disco dancer + Party mode button ──────────────────────── */}
-      <div className="absolute bottom-20 left-1/2 -translate-x-1/2 z-20 md:bottom-24 flex flex-col items-center gap-3">
+      <div className="absolute inset-x-5 bottom-40 z-20 flex justify-center sm:bottom-44 md:bottom-36">
+        <div className="flex max-w-sm flex-col items-center gap-4 text-center sm:max-w-xl">
+          <p className="font-display text-lg leading-tight tracking-tight text-white/90 sm:text-xl md:text-3xl">
+            Product and service company building AI-first experiences, sharp
+            interfaces, and digital products that know how to hold attention.
+          </p>
+          <div className="flex w-full flex-col gap-3 rounded-[28px] border border-white/10 bg-white/6 p-2 backdrop-blur-md sm:w-auto sm:flex-row sm:items-center sm:justify-center">
+            <a
+              href="#work"
+              className="w-full rounded-full bg-[#f3eadc] px-6 py-3 text-center font-mono text-[11px] uppercase tracking-[0.2em] text-black transition hover:bg-white sm:w-auto"
+            >
+              View work
+            </a>
+            <a
+              href="mailto:founder@maincharacter.one"
+              className="w-full rounded-full border border-white/18 bg-black/20 px-6 py-3 text-center font-mono text-[11px] uppercase tracking-[0.2em] text-white transition hover:border-white/40 hover:bg-white/8 sm:w-auto"
+            >
+              Start a project
+            </a>
+          </div>
+        </div>
+      </div>
+
+      {/* ── Disco dancer ──────────────────────────────────────────── */}
+      <div className="absolute bottom-20 left-1/2 z-20 flex -translate-x-1/2 flex-col items-center gap-3 sm:bottom-24 md:bottom-24">
         <DiscoDancer party={party} />
+      </div>
+
+      <div className="absolute right-5 bottom-18 z-20 sm:right-6 sm:bottom-24 md:right-10 md:bottom-16">
         <button
           onClick={() => setParty((v) => !v)}
-          className="relative font-mono text-[11px] tracking-[0.18em] uppercase px-5 py-2.5 rounded-sm overflow-hidden transition-all duration-300"
+          className="group inline-flex items-center gap-3 rounded-full border border-white/12 bg-black/30 px-3 py-2 backdrop-blur-md transition hover:border-white/30 hover:bg-black/45"
           style={
             party
               ? {
-                  background:
-                    "linear-gradient(90deg,#ff00cc,#8800ff,#00ccff,#00ff88,#ffcc00,#ff00cc)",
-                  backgroundSize: "300% 100%",
-                  animation:
-                    "party-btn-shimmer 2s linear infinite, party-btn-pulse 1.4s ease-in-out infinite",
-                  color: "#fff",
-                  border: "none",
-                  textShadow: "0 0 8px rgba(255,255,255,0.9)",
+                  boxShadow:
+                    "0 0 18px rgba(255,140,64,0.24), 0 0 42px rgba(255,90,0,0.14)",
                 }
-              : {
-                  background: "rgba(255,255,255,0.07)",
-                  border: "1px solid rgba(255,255,255,0.18)",
-                  color: "rgba(255,255,255,0.65)",
-                }
+              : undefined
           }
         >
-          {party ? "✕ End Party" : "🪩 Party Mode"}
+          <span
+            className="h-2.5 w-2.5 rounded-full transition"
+            style={{
+              background: party ? "#ff8f4c" : "rgba(255,255,255,0.38)",
+              boxShadow: party ? "0 0 14px rgba(255,143,76,0.85)" : "none",
+            }}
+          />
+          <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-white/78 transition group-hover:text-white sm:text-[11px]">
+            {party ? "End party mode" : "Party mode"}
+          </span>
         </button>
       </div>
 
-      <div className="absolute right-6 bottom-8 left-6 grid grid-cols-1 gap-4 md:right-10 md:bottom-10 md:left-10 md:grid-cols-12 md:gap-8">
+      <div className="absolute right-5 bottom-5 left-5 grid grid-cols-1 gap-2 sm:right-6 sm:bottom-8 sm:left-6 md:right-10 md:bottom-10 md:left-10 md:grid-cols-12 md:gap-8">
         <div className="md:col-span-4">
-          <p className="font-mono text-[11px] leading-snug tracking-[0.18em] uppercase md:text-xs">
+          <p className="font-mono text-[10px] leading-snug tracking-[0.18em] uppercase sm:text-[11px] md:text-xs">
             Service &amp; Product
             <br />
             Studio.
           </p>
         </div>
         <div className="md:col-span-8 md:text-right">
-          <p className="font-mono text-[11px] leading-snug tracking-[0.18em] uppercase md:text-xs">
-            Main Character is a small studio designing services and shipping
-            <br />
-            products for founders, teams, and brands who refuse to play a
-            supporting role.
+          <p className="font-mono text-[10px] leading-snug tracking-[0.18em] uppercase sm:text-[11px] md:text-xs">
+            Ai products. Ai design. Business with main character energy.
           </p>
         </div>
       </div>

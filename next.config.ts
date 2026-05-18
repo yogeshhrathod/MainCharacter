@@ -7,6 +7,9 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   compress: true,
   output: "export",
+  images: {
+    unoptimized: true,
+  },
   ...(basePath ? { basePath, assetPrefix: basePath } : {}),
 };
 

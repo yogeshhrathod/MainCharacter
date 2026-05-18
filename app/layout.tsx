@@ -38,15 +38,17 @@ export const metadata: Metadata = {
     template: "%s · Main Character",
   },
   description:
-    "Main Character is a service and product studio. We design, build, and ship work that puts our clients in the lead role.",
+    "Main Character is a product and service company building AI-first products, interfaces, and business experiences with standout presence.",
   applicationName: "Main Character",
   keywords: [
     "Main Character",
-    "design studio",
+    "ai design",
+    "product company",
     "product studio",
     "services",
     "consulting",
     "software products",
+    "ai products",
   ],
   authors: [{ name: "Main Character" }],
   creator: "Main Character",
@@ -58,14 +60,14 @@ export const metadata: Metadata = {
     siteName: "Main Character",
     title: "Main Character — Services & Products",
     description:
-      "A service and product studio building work that puts our clients in the lead role.",
+      "A product and service company building AI-first products, interfaces, and business experiences with standout presence.",
     locale: "en_US",
   },
   twitter: {
     card: "summary_large_image",
     title: "Main Character — Services & Products",
     description:
-      "A service and product studio building work that puts our clients in the lead role.",
+      "A product and service company building AI-first products, interfaces, and business experiences with standout presence.",
   },
   robots: {
     index: true,
@@ -94,7 +96,7 @@ const orgJsonLd = {
   url: SITE_URL,
   email: "founder@maincharacter.one",
   description:
-    "A service and product studio building work that puts our clients in the lead role.",
+    "A product and service company building AI-first products, interfaces, and business experiences with standout presence.",
   sameAs: [],
 };
 

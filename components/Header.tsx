@@ -76,7 +76,7 @@ export default function Header() {
       </div>
 
       {open && (
-        <div className="border-t border-white/10 px-5 py-6 md:hidden">
+        <div className="border-t border-white/10 bg-black/80 px-5 py-6 backdrop-blur md:hidden">
           <ul className="space-y-3 font-mono text-xs tracking-[0.18em] uppercase">
             {[...NAV_LEFT, ...NAV_MID].map((i) => (
               <li key={i.href}>
