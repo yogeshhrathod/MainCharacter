@@ -106,10 +106,16 @@ export default function AsciiWordmark({
     if (!ctx) return;
     ctx.textRendering = "optimizeSpeed";
 
-    const dpr = 1;
+    const dpr = typeof window !== "undefined" ? window.devicePixelRatio || 1 : 1;
     let width = 0;
     let height = 0;
     let cellPx = 18;
+
+    const getPixelFont = () => {
+      if (typeof window === "undefined") return '"VT323", ui-monospace, monospace';
+      const computed = getComputedStyle(document.documentElement).getPropertyValue("--font-pixel");
+      return computed ? `${computed}, "VT323", ui-monospace, monospace` : '"VT323", ui-monospace, monospace';
+    };
     let inner: Stop[] = [];
     let edge: Stop[] = [];
     const sparks: Spark[] = [];
@@ -159,8 +165,17 @@ export default function AsciiWordmark({
       octx.textBaseline = "alphabetic";
       octx.textAlign = "center";
 
-      const maxW = width * 0.97;
-      const maxLineH = (height / lines.length) * 1.18;
+      // Constrain text layout area to keep it centered and readable without overlapping header/footer
+      const textAreaW = Math.min(1600, width * 0.9);
+      let textAreaH = height * 0.65;
+      if (width < 480) {
+        textAreaH = height * 0.28;
+      } else if (width < 768) {
+        textAreaH = height * 0.34;
+      }
+
+      const maxW = textAreaW;
+      const maxLineH = (textAreaH / lines.length) * 1.18;
       const fontSizes = lines.map((l) => fitFontSize(octx, l, maxW, maxLineH));
       const lineHeights = fontSizes.map((s) => s * 0.78);
       const gap = Math.round(height * 0.005);
@@ -253,18 +268,18 @@ export default function AsciiWordmark({
        * If we keep the desktop density on a phone, the silhouette survives
        * but the actual words dissolve into unreadable texture.
        */
-      const responsiveCellMin =
-        width < 420 ? Math.max(cellMin, 12) :
-        width < 640 ? Math.max(cellMin, 10) :
-        cellMin;
-      const responsiveDensity =
-        width < 420 ? Math.round(width / 42) :
-        width < 640 ? Math.round(width / 58) :
-        Math.round(width / 95);
-      cellPx = Math.max(
-        responsiveCellMin,
-        Math.min(cellMax, responsiveDensity)
-      );
+      // Scale cell size based on screen width for optimal density and legibility
+      let targetCell = 14;
+      if (width < 480) {
+        targetCell = 6;
+      } else if (width < 768) {
+        targetCell = 9;
+      } else if (width < 1024) {
+        targetCell = 12;
+      } else {
+        targetCell = 15;
+      }
+      cellPx = Math.max(cellMin, Math.min(cellMax, targetCell));
       canvas.width = Math.floor(width * dpr);
       canvas.height = Math.floor(height * dpr);
       canvas.style.width = width + "px";
@@ -281,13 +296,42 @@ export default function AsciiWordmark({
     /* ─── draw ────────────────────────────────────────────────────── */
     const draw = () => {
       ctx.clearRect(0, 0, width, height);
+
+      const wordmarkColor =
+        getComputedStyle(document.documentElement)
+          .getPropertyValue("--hero-wordmark")
+          .trim() || "#ffffff";
+
+      // Draw dynamic subtle background grid (adapts to light/dark themes)
+      const gridColor = wordmarkColor === "#101010"
+        ? "rgba(16, 16, 16, 0.05)"
+        : "rgba(255, 255, 255, 0.045)";
+      
+      ctx.strokeStyle = gridColor;
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      const cols = Math.floor(width / cellPx);
+      const rows = Math.floor(height / cellPx);
+      for (let c = 0; c <= cols; c++) {
+        const x = c * cellPx;
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, height);
+      }
+      for (let r = 0; r <= rows; r++) {
+        const y = r * cellPx;
+        ctx.moveTo(0, y);
+        ctx.lineTo(width, y);
+      }
+      ctx.stroke();
+
       ctx.textBaseline = "middle";
       ctx.textAlign = "center";
       ctx.imageSmoothingEnabled = false;
 
-      const glyphSize = Math.max(16, cellPx + 6);
-      ctx.font = `${glyphSize}px "VT323", ui-monospace, monospace`;
-      ctx.fillStyle = "#ffffff";
+      const glyphSize = Math.floor(cellPx * 1.15);
+      const fontName = getPixelFont();
+      ctx.font = `${glyphSize}px ${fontName}`;
+      ctx.fillStyle = wordmarkColor;
 
       const isParty = partyProgress > 0.005;
 
@@ -307,11 +351,21 @@ export default function AsciiWordmark({
       const partyHue = (ox: number, oy: number) =>
         ((ox / width) * 300 + (oy / height) * 60 + frame * 1.5) % 360;
 
-      const glyph = (ch: string, x: number, y: number, a: number) => {
+      const glyph = (ch: string, x: number, y: number, a: number, glowColor?: string) => {
         if (a < 0.007 || !ch) return;
         ctx.globalAlpha = a;
+        
+        if (glowColor) {
+          ctx.shadowColor = glowColor;
+          ctx.shadowBlur = 8;
+        } else {
+          ctx.shadowBlur = 0;
+        }
+        
         ctx.fillText(ch, x, y);
-        ctx.fillText(ch, x + 1, y);
+        
+        // Reset state
+        ctx.shadowBlur = 0;
         ctx.globalAlpha = 1;
       };
 
@@ -356,17 +410,22 @@ export default function AsciiWordmark({
         const iy = (s.oy + s.py + 0.5) | 0;
 
         /* party LED color — revealed left→right, MAIN line leads CHARACTER */
+        let glowColor: string | undefined;
         if (isParty) {
           const oyOffset  = (s.oy / height) * 0.22;
           const threshold = Math.max(0, textReveal - oyOffset) * 1.30;
           if ((s.ox / width) < threshold) {
             const h = partyHue(s.ox, s.oy);
             ctx.fillStyle = `hsl(${h}, 100%, ${s.edge ? 72 : 60}%)`;
+            glowColor = `hsl(${h}, 100%, 60%)`;
           } else {
-            ctx.fillStyle = "#ffffff";
+            ctx.fillStyle = wordmarkColor;
           }
         } else {
-          ctx.fillStyle = "#ffffff";
+          ctx.fillStyle = wordmarkColor;
+          if (wordmarkColor === "#ffffff") {
+            glowColor = "rgba(255, 255, 255, 0.4)";
+          }
         }
 
         if (s.mode === "blast") {
@@ -380,7 +439,7 @@ export default function AsciiWordmark({
           }
           const distHome = Math.hypot(s.px, s.py);
           const fadeOut = Math.max(0.12, 1 - distHome / (Math.max(width, height) * 0.68));
-          glyph(ch, ix, iy, s.spawnFade * fadeOut);
+          glyph(ch, ix, iy, s.spawnFade * fadeOut, glowColor);
 
         } else if (s.mode === "return") {
           /* invisible while waiting — pops in when returnDelay hits 0 */
@@ -388,30 +447,30 @@ export default function AsciiWordmark({
         } else {
           /* idle: landing flash → normal crossfade + @ hover */
           if (s.landFlash > 0) {
-            glyph(s.ch, ix, iy, s.spawnFade);
+            glyph(s.ch, ix, iy, s.spawnFade, glowColor);
           } else {
             const at = atStr(ix, iy);
             const bodyA = s.spawnFade * Math.max(0, 1 - at);
             if (at > 0.015) {
               if (s.chNext !== null) {
-                glyph(s.ch, ix, iy, (1 - s.blend) * bodyA);
-                glyph(s.chNext, ix, iy, s.blend * bodyA);
+                glyph(s.ch, ix, iy, (1 - s.blend) * bodyA, glowColor);
+                glyph(s.chNext, ix, iy, s.blend * bodyA, glowColor);
               } else {
-                glyph(s.ch, ix, iy, bodyA);
+                glyph(s.ch, ix, iy, bodyA, glowColor);
               }
-              glyph("@", ix, iy, s.spawnFade * at);
+              glyph("@", ix, iy, s.spawnFade * at, glowColor);
             } else if (s.chNext !== null) {
-              glyph(s.ch, ix, iy, (1 - s.blend) * s.spawnFade);
-              glyph(s.chNext, ix, iy, s.blend * s.spawnFade);
+              glyph(s.ch, ix, iy, (1 - s.blend) * s.spawnFade, glowColor);
+              glyph(s.chNext, ix, iy, s.blend * s.spawnFade, glowColor);
             } else {
-              glyph(s.ch, ix, iy, s.spawnFade);
+              glyph(s.ch, ix, iy, s.spawnFade, glowColor);
             }
           }
         }
       }
 
-      /* reset fill to white for sparks/ash (or party-cycle for sparks too) */
-      ctx.fillStyle = "#ffffff";
+      /* reset fill for sparks/ash (or party-cycle for sparks too) */
+      ctx.fillStyle = wordmarkColor;
 
       /* spark + ash particles */
       for (const sp of sparks) {
@@ -426,7 +485,7 @@ export default function AsciiWordmark({
           }
           const ch = FIRE_CHARS[Math.floor(sp.age * 0.55 + frame * 0.2) % FIRE_CHARS.length];
           glyph(ch, (sp.x + 0.5) | 0, (sp.y + 0.5) | 0, t * t * 0.95);
-          if (isParty) ctx.fillStyle = "#ffffff";
+          if (isParty) ctx.fillStyle = wordmarkColor;
         }
       }
 

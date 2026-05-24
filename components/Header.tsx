@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import ThemeToggle from "@/components/ThemeToggle";
 
 const NAV_LEFT = [
   { href: "#work", label: "Work" },
@@ -17,7 +18,7 @@ export default function Header() {
   const [open, setOpen] = useState(false);
 
   return (
-    <header className="absolute inset-x-0 top-0 z-30 text-white">
+    <header className="absolute inset-x-0 top-0 z-30 text-[var(--hero-fg)]">
       <div className="grid grid-cols-2 items-start gap-4 px-5 py-5 md:grid-cols-12 md:gap-8 md:px-8 md:py-7">
         <div className="md:col-span-3">
           <Link
@@ -53,7 +54,7 @@ export default function Header() {
           </ul>
         </div>
 
-        <div className="hidden text-right md:col-span-3 md:block">
+        <div className="hidden text-right md:col-span-3 md:flex md:flex-col md:items-end md:gap-3">
           <p className="font-mono text-[11px] tracking-[0.18em] uppercase">
             Service &amp; Product Studio
           </p>
@@ -63,20 +64,24 @@ export default function Header() {
           >
             founder@maincharacter.one
           </a>
+          <ThemeToggle />
         </div>
 
-        <button
-          aria-label={open ? "Close menu" : "Open menu"}
-          aria-expanded={open}
-          onClick={() => setOpen((v) => !v)}
-          className="justify-self-end font-mono text-[11px] tracking-[0.18em] uppercase md:hidden"
-        >
-          {open ? "Close" : "Menu"}
-        </button>
+        <div className="flex items-center gap-2 justify-self-end md:hidden">
+          <ThemeToggle className="px-2.5" />
+          <button
+            aria-label={open ? "Close menu" : "Open menu"}
+            aria-expanded={open}
+            onClick={() => setOpen((v) => !v)}
+            className="font-mono text-[11px] tracking-[0.18em] uppercase"
+          >
+            {open ? "Close" : "Menu"}
+          </button>
+        </div>
       </div>
 
       {open && (
-        <div className="border-t border-white/10 bg-black/80 px-5 py-6 backdrop-blur md:hidden">
+        <div className="border-t border-[var(--hero-panel-border)] bg-[var(--hero-panel-strong)] px-5 py-6 backdrop-blur md:hidden">
           <ul className="space-y-3 font-mono text-xs tracking-[0.18em] uppercase">
             {[...NAV_LEFT, ...NAV_MID].map((i) => (
               <li key={i.href}>

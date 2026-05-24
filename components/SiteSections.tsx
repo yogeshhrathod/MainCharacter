@@ -44,9 +44,17 @@ const products = [
 export default function SiteSections() {
   return (
     <div className="bg-paper text-ink">
+      <div
+        aria-hidden="true"
+        className="h-24 sm:hidden"
+        style={{
+          background:
+            "linear-gradient(to bottom, var(--hero-bg) 0%, color-mix(in srgb, var(--hero-bg) 35%, var(--color-paper)) 42%, var(--color-paper) 100%)",
+        }}
+      />
       <section
         id="work"
-        className="scroll-mt-24 border-t border-line px-5 py-16 sm:px-6 sm:py-20 md:px-10 md:py-28"
+        className="scroll-mt-24 px-5 pt-10 pb-16 sm:px-6 sm:pt-[5.5rem] sm:pb-20 md:px-10 md:pt-[7.5rem] md:pb-28"
       >
         <div className="mx-auto grid max-w-7xl gap-10 md:grid-cols-12">
           <div className="md:col-span-4">
@@ -62,7 +70,7 @@ export default function SiteSections() {
             {work.map((item) => (
               <article
                 key={item.title}
-                className="border border-line bg-white/70 p-5 transition-transform duration-300 hover:-translate-y-1"
+                className="border border-line bg-surface p-5 transition-transform duration-300 hover:-translate-y-1"
               >
                 <h3 className="font-display text-xl tracking-tight">
                   {item.title}
@@ -124,10 +132,10 @@ export default function SiteSections() {
                 href={item.href}
                 target="_blank"
                 rel="noreferrer"
-                className="group border border-line p-4 transition-transform duration-300 hover:-translate-y-1 sm:p-6"
+                className="group border border-line bg-surface p-4 transition-transform duration-300 hover:-translate-y-1 sm:p-6"
               >
-                <div className="relative overflow-hidden rounded-2xl border border-line/70 bg-[#f4efe8]">
-                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.75),rgba(240,230,220,0.35),transparent_72%)]" />
+                <div className="relative overflow-hidden rounded-2xl border border-line/70 bg-product">
+                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.28),rgba(240,230,220,0.18),transparent_72%)]" />
                   <div className="relative aspect-square">
                     <Image
                       src={item.image}

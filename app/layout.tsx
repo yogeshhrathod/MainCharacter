@@ -84,7 +84,10 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#fafaf9",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#fafaf9" },
+    { media: "(prefers-color-scheme: dark)", color: "#090909" },
+  ],
   width: "device-width",
   initialScale: 1,
 };
@@ -100,12 +103,33 @@ const orgJsonLd = {
   sameAs: [],
 };
 
+const themeScript = `
+(() => {
+  try {
+    const key = "main-character:theme";
+    const saved = window.localStorage.getItem(key);
+    const theme = saved === "light" || saved === "dark"
+      ? saved
+      : window.matchMedia("(prefers-color-scheme: dark)").matches
+        ? "dark"
+        : "light";
+    document.documentElement.dataset.theme = theme;
+    document.documentElement.style.colorScheme = theme;
+  } catch {}
+})();
+`;
+
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${pixel.variable} ${mono.variable} ${sans.variable} ${display.variable}`}>
+    <html
+      lang="en"
+      suppressHydrationWarning
+      className={`${pixel.variable} ${mono.variable} ${sans.variable} ${display.variable}`}
+    >
       <body className="min-h-dvh antialiased">
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(orgJsonLd) }}
