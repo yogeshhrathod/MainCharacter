@@ -110,9 +110,8 @@ export default function Hero() {
 
       <div className="absolute inset-x-5 bottom-40 z-20 flex justify-center sm:bottom-44 md:bottom-36">
         <div className="flex max-w-sm flex-col items-center gap-4 text-center sm:max-w-xl">
-          <p className="font-display text-lg leading-tight tracking-tight text-[var(--hero-muted)] sm:text-xl md:text-3xl">
-            Product and service company building AI-first experiences, sharp
-            interfaces, and digital products that know how to hold attention.
+          <p className="font-display text-lg leading-tight tracking-tight text-[var(--hero-highlight-red)] sm:text-xl md:text-3xl">
+            Product and service company building AI-first experiences, sharp interfaces, and digital products that know how to hold attention.
           </p>
           <div className="flex w-full flex-col gap-3 rounded-[28px] border border-[var(--hero-panel-border)] bg-[var(--hero-panel)] p-2 backdrop-blur-md sm:w-auto sm:flex-row sm:items-center sm:justify-center">
             <a
