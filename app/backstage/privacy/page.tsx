@@ -18,7 +18,7 @@ export default function PrivacyPage() {
         <h2>Preview scope</h2>
         <p>
           This policy applies to the isolated Backstage Live TestFlight preview,
-          version 1.0.0 build 2. The preview opens with fictional demo data. It
+          version 1.0.0 build 3. The preview opens with fictional demo data. It
           does not create a Backstage account, sign you into a backend, or
           upload your show, profile, photo, or location data to Main Character
           LLP.
@@ -77,9 +77,9 @@ export default function PrivacyPage() {
         <h2>Children</h2>
         <p>
           The preview is intended for adult performers, producers, and beta
-          testers. It is not directed to children, and Main Character LLP
-          does not knowingly collect children&apos;s personal information
-          through this build.
+          testers. It is not directed to children, and Main Character LLP does
+          not knowingly collect children&apos;s personal information through
+          this build.
         </p>
       </section>
 
@@ -87,9 +87,12 @@ export default function PrivacyPage() {
         <h2>Your choices</h2>
         <p>
           Photo and location access are optional and controlled through iOS
-          Settings. Removing the app deletes its local preview data. You may ask
-          us to delete support correspondence associated with your email,
-          subject to any legal retention requirement.
+          Settings. The binary includes an Apple-required motion purpose string
+          because a bundled location component references Apple motion APIs, but
+          this preview does not request motion permission or read motion data.
+          Removing the app deletes its local preview data. You may ask us to
+          delete support correspondence associated with your email, subject to
+          any legal retention requirement.
         </p>
       </section>
 

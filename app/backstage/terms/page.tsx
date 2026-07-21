@@ -17,7 +17,7 @@ export default function TermsPage() {
       <section>
         <h2>Beta purpose</h2>
         <p>
-          Backstage Live is pre-release evaluation software. Build 2 uses
+          Backstage Live is pre-release evaluation software. Build 3 uses
           fictional, device-local demo data and is not a production booking,
           ticketing, payment, emergency, or record-keeping service. Do not rely
           on it for a real event.
