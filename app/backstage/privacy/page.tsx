@@ -3,8 +3,7 @@ import LegalPage from "../LegalPage";
 
 export const metadata: Metadata = {
   title: "Backstage Live Privacy Policy",
-  description:
-    "Privacy policy for the Backstage Live public TestFlight preview.",
+  description: "Privacy policy for the Backstage Live TestFlight beta.",
   alternates: { canonical: "/backstage/privacy" },
 };
 
@@ -12,54 +11,73 @@ export default function PrivacyPage() {
   return (
     <LegalPage
       title="Privacy Policy"
-      summary="This policy describes the limited, device-local data handling in the Backstage Live public TestFlight preview operated by Main Character LLP."
+      summary="This policy explains how Main Character LLP handles information in the Backstage Live TestFlight beta."
     >
       <section>
-        <h2>Preview scope</h2>
+        <h2>Beta scope</h2>
         <p>
-          This policy applies to the isolated Backstage Live TestFlight preview,
-          version 1.0.0 build 3. The preview opens with fictional demo data. It
-          does not create a Backstage account, sign you into a backend, or
-          upload your show, profile, photo, or location data to Main Character
-          LLP.
+          Backstage Live is pre-release software. TestFlight builds may connect
+          to our development Supabase project so testers can evaluate shared
+          artist, producer, venue, show, lineup, audience, and live-show flows.
+          Use fictional test information only. Information you enter may persist
+          and may be visible to other authorised beta testers.
         </p>
       </section>
 
       <section>
-        <h2>Information used on your device</h2>
+        <h2>Information we process</h2>
         <ul>
           <li>
-            Fictional show, venue, artist, lineup, audience, and performance
-            data is bundled with the app for evaluation.
+            Account and authentication information, including your phone number
+            and internal account identifier.
           </li>
           <li>
-            If you choose a photo, the preview uses it locally so you can
-            evaluate profile and venue editing. It is not uploaded by this
-            build.
+            Profile and role information, such as stage name, username, city,
+            biography, experience, and style tags.
           </li>
           <li>
-            If you choose to use your current location, it is used on your
-            device to position the venue map. You can instead tap the map
-            manually.
+            Test venue, show, registration, lineup, live-session, attendance,
+            ticket-sales, and performance information created in the beta.
           </li>
           <li>
-            Appearance, haptic, and similar preview preferences may be stored on
-            your device.
+            Photos you choose for profiles or venues. These may be uploaded to
+            our development storage project.
+          </li>
+          <li>
+            A venue location you select. Current-device location is optional and
+            is used to help choose a venue position when you request it.
+          </li>
+          <li>
+            App preferences stored on your device, plus diagnostics and feedback
+            supplied through TestFlight or support email.
           </li>
         </ul>
       </section>
 
       <section>
+        <h2>How we use and share information</h2>
+        <p>
+          We use beta information to provide, secure, troubleshoot, and improve
+          Backstage Live. Shared show and venue information is available to
+          other authorised testers where needed for collaborative beta flows.
+          Supabase processes hosted database, authentication, and storage data
+          for us. Apple processes TestFlight distribution, diagnostics, crash,
+          and feedback information. We do not sell beta tester information.
+        </p>
+      </section>
+
+      <section>
         <h2>Apple services</h2>
         <p>
-          Apple distributes the preview through TestFlight and may process
-          install, diagnostics, crash, and feedback information under the{" "}
+          Apple distributes the beta through TestFlight and may process install,
+          diagnostics, crash, and feedback information under the{" "}
           <a href="https://www.apple.com/legal/privacy/">
             Apple Privacy Policy
           </a>
           . Apple Maps may process map and location interactions when you use
-          the map. These Apple services are governed by Apple&apos;s terms and
-          privacy practices.
+          the map. Push alerts and remote address search are disabled in the
+          current internal beta. Apple services are governed by Apple&apos;s
+          terms and privacy practices.
         </p>
       </section>
 
@@ -68,15 +86,15 @@ export default function PrivacyPage() {
         <p>
           If you voluntarily email us or submit TestFlight feedback, we receive
           the information you include and use it to respond and improve the
-          preview. We retain support correspondence only as long as reasonably
-          needed for those purposes or legal obligations, and we do not sell it.
+          beta. We retain support correspondence only as long as reasonably
+          needed for those purposes or legal obligations.
         </p>
       </section>
 
       <section>
         <h2>Children</h2>
         <p>
-          The preview is intended for adult performers, producers, and beta
+          The beta is intended for adult performers, producers, and beta
           testers. It is not directed to children, and Main Character LLP does
           not knowingly collect children&apos;s personal information through
           this build.
@@ -87,12 +105,14 @@ export default function PrivacyPage() {
         <h2>Your choices</h2>
         <p>
           Photo and location access are optional and controlled through iOS
-          Settings. The binary includes an Apple-required motion purpose string
-          because a bundled location component references Apple motion APIs, but
-          this preview does not request motion permission or read motion data.
-          Removing the app deletes its local preview data. You may ask us to
-          delete support correspondence associated with your email, subject to
-          any legal retention requirement.
+          Settings. The binary includes a motion purpose string because a
+          bundled location component references Apple motion APIs, but the
+          current beta does not request motion permission or read motion data.
+          Deleting the app removes local data but does not delete cloud beta
+          records. To request deletion of your beta account, cloud records, or
+          support correspondence, email us from the contact address associated
+          with the request. We may retain information where required by law or
+          needed for security and abuse prevention.
         </p>
       </section>
 

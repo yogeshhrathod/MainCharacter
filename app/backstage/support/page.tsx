@@ -3,8 +3,7 @@ import LegalPage from "../LegalPage";
 
 export const metadata: Metadata = {
   title: "Backstage Live Support",
-  description:
-    "Support information for the Backstage Live public TestFlight preview.",
+  description: "Support information for the Backstage Live TestFlight beta.",
   alternates: { canonical: "/backstage/support" },
 };
 
@@ -12,7 +11,7 @@ export default function SupportPage() {
   return (
     <LegalPage
       title="Support"
-      summary="Help with the isolated Backstage Live public TestFlight preview."
+      summary="Help with the Backstage Live TestFlight beta."
     >
       <section>
         <h2>Contact</h2>
@@ -26,11 +25,13 @@ export default function SupportPage() {
       </section>
 
       <section>
-        <h2>Using this preview</h2>
+        <h2>Using this beta</h2>
         <ul>
           <li>
-            No sign-in is required; the preview opens with fictional local data.
+            The internal beta signs in to a shared development backend. Use only
+            the test phone number or invitation supplied by Main Character LLP.
           </li>
+          <li>Use fictional test information only.</li>
           <li>Switch Artist and Producer roles from Profile.</li>
           <li>
             In Producer mode, open a show and update Tickets sold. Switch to
@@ -44,12 +45,12 @@ export default function SupportPage() {
       </section>
 
       <section>
-        <h2>Resetting the preview</h2>
+        <h2>Signing out and resetting</h2>
         <p>
-          If the local preview becomes stuck, close and reopen it. To remove all
-          local preview data and permissions, delete the app and reinstall it
-          from TestFlight. There is no Backstage account or cloud data to delete
-          in this build.
+          Sign out from Profile. If the beta becomes stuck, close and reopen it
+          or reinstall it from TestFlight. Deleting the app removes local data
+          and permissions but does not delete your beta account or cloud test
+          records. Email us to request deletion.
         </p>
       </section>
 
