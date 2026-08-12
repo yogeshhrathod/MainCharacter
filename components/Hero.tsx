@@ -1,19 +1,29 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Header from "@/components/Header";
 import AsciiWordmark from "@/components/AsciiWordmark";
 import DiscoCanvas from "@/components/DiscoCanvas";
 import StageCue from "@/components/StageCue";
+import { useSiteTheme } from "@/components/ThemeProvider";
 import { WORDMARK_LINES } from "@/components/scene";
 
 export default function Hero() {
-  const [party, setParty] = useState(false);
+  const { party } = useSiteTheme();
+  /* Lock first painted height so mobile URL-bar show/hide doesn't
+     resize the stage and restart the ASCII wordmark. */
+  const [stageMinH, setStageMinH] = useState<string>("100svh");
+
+  useEffect(() => {
+    const h = Math.max(window.innerHeight, document.documentElement.clientHeight);
+    setStageMinH(`${h}px`);
+  }, []);
 
   return (
     <section
       id="top"
-      className="relative isolate min-h-[100svh] w-full overflow-hidden bg-[var(--hero-bg)] text-[var(--hero-fg)]"
+      className="relative isolate w-full overflow-hidden bg-[var(--hero-bg)] text-[var(--hero-fg)]"
+      style={{ minHeight: stageMinH }}
     >
       <h1 className="sr-only">Main Character — product and service studio</h1>
 
@@ -22,7 +32,6 @@ export default function Hero() {
         className="absolute inset-0 pointer-events-none"
         style={{
           opacity: party ? 0 : 1,
-          /* linger 1 s then fade over 2 s so lights are gone by beat 4 */
           transition: party ? "opacity 2s ease 1s" : "opacity 1.5s ease",
         }}
       >
@@ -96,7 +105,6 @@ export default function Hero() {
         />
       </div>
 
-      {/* Compact CTAs — left, clear of the wordmark center */}
       <div className="absolute bottom-28 left-5 z-20 flex flex-col gap-2 sm:bottom-24 sm:left-6 md:bottom-28 md:left-10">
         <a
           href="#contact"
@@ -114,35 +122,6 @@ export default function Hero() {
 
       <div className="absolute bottom-[5.5rem] left-1/2 z-20 hidden -translate-x-1/2 flex-col items-center sm:bottom-24 sm:flex md:bottom-24">
         <StageCue party={party} />
-      </div>
-
-      <div className="absolute right-5 bottom-20 z-20 sm:right-6 sm:bottom-24 md:right-10 md:bottom-16">
-        <button
-          type="button"
-          aria-pressed={party}
-          aria-label={party ? "End party mode" : "Start party mode"}
-          onClick={() => setParty((v) => !v)}
-          className="group inline-flex items-center gap-3 rounded-full border border-[var(--hero-panel-border)] bg-[var(--hero-secondary-bg)] px-3 py-2 backdrop-blur-md transition hover:border-[var(--hero-soft)]"
-          style={
-            party
-              ? {
-                  boxShadow:
-                    "0 0 18px rgba(255,140,64,0.24), 0 0 42px rgba(255,90,0,0.14)",
-                }
-              : undefined
-          }
-        >
-          <span
-            className="h-2.5 w-2.5 rounded-full transition"
-            style={{
-              background: party ? "#ff8f4c" : "var(--hero-soft)",
-              boxShadow: party ? "0 0 14px rgba(255,143,76,0.85)" : "none",
-            }}
-          />
-          <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-[var(--hero-muted)] transition group-hover:text-[var(--hero-fg)] sm:text-[11px]">
-            {party ? "End party mode" : "Party mode"}
-          </span>
-        </button>
       </div>
 
       <div className="absolute right-5 bottom-5 left-5 z-20 grid grid-cols-1 gap-2 sm:right-6 sm:bottom-8 sm:left-6 sm:grid-cols-2 md:right-10 md:bottom-10 md:left-10 md:grid-cols-12 md:gap-8">

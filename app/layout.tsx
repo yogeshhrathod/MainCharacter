@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { VT323, Outfit, JetBrains_Mono } from "next/font/google";
+import { ThemeProvider } from "@/components/ThemeProvider";
 import "./globals.css";
 
 const pixel = VT323({
@@ -87,10 +88,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#fafaf9" },
-    { media: "(prefers-color-scheme: dark)", color: "#090909" },
-  ],
+  themeColor: "#090909",
   width: "device-width",
   initialScale: 1,
 };
@@ -112,13 +110,9 @@ const themeScript = `
   try {
     const key = "main-character:theme";
     const saved = window.localStorage.getItem(key);
-    const theme = saved === "light" || saved === "dark"
-      ? saved
-      : window.matchMedia("(prefers-color-scheme: dark)").matches
-        ? "dark"
-        : "light";
+    const theme = saved === "party" ? "party" : "dark";
     document.documentElement.dataset.theme = theme;
-    document.documentElement.style.colorScheme = theme;
+    document.documentElement.style.colorScheme = "dark";
   } catch {}
 })();
 `;
@@ -129,6 +123,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
+      data-theme="dark"
       suppressHydrationWarning
       className={`${pixel.variable} ${mono.variable} ${display.variable}`}
     >
@@ -144,7 +139,7 @@ export default function RootLayout({
         >
           Skip to content
         </a>
-        {children}
+        <ThemeProvider>{children}</ThemeProvider>
       </body>
     </html>
   );

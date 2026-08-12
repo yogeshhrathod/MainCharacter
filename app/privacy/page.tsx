@@ -38,8 +38,8 @@ export default function PrivacyPage() {
             address, browser type, and request timing)
           </li>
           <li>
-            Theme preference stored locally in your browser if you use the site
-            theme toggle
+            Theme preference (dark or party) stored locally in your browser if
+            you use the site theme toggle
           </li>
         </ul>
         <p>

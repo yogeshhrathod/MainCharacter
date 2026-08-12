@@ -154,7 +154,7 @@ export default function AsciiWordmark({
     };
 
     /* ─── build mask + grid stops ─────────────────────────────────── */
-    const buildMaskAndStops = () => {
+    const buildMaskAndStops = (instant = false) => {
       const off = document.createElement("canvas");
       off.width = width;
       off.height = height;
@@ -228,8 +228,8 @@ export default function AsciiWordmark({
             edge: isEdge,
             interval,
             next: Math.floor(Math.random() * interval),
-            spawnHold: Math.floor(Math.random() * 18),
-            spawnFade: 0,
+            spawnHold: instant ? 0 : Math.floor(Math.random() * 18),
+            spawnFade: instant ? 1 : 0,
             px: 0, py: 0,
             vx: 0, vy: 0,
             mode: "idle",
@@ -255,38 +255,70 @@ export default function AsciiWordmark({
       }
     };
 
-    /* ─── resize ──────────────────────────────────────────────────── */
-    const resize = () => {
-      const parent = canvas.parentElement!;
-      width = parent.clientWidth;
-      height = parent.clientHeight;
-      /*
-       * Small screens need fewer, larger glyph cells.
-       * If we keep the desktop density on a phone, the silhouette survives
-       * but the actual words dissolve into unreadable texture.
-       */
-      // Scale cell size based on screen width for optimal density and legibility
-      let targetCell = 14;
-      if (width < 480) {
-        targetCell = 6;
-      } else if (width < 768) {
-        targetCell = 9;
-      } else if (width < 1024) {
-        targetCell = 12;
-      } else {
-        targetCell = 15;
-      }
-      cellPx = Math.max(cellMin, Math.min(cellMax, targetCell));
+    /* ─── resize ────────────────────────────────────────────────────
+     * Mobile browser chrome show/hide fires window.resize and changes
+     * height. Rebuilding the mask there restarts the spawn animation.
+     * Only rebuild when width/cell grid actually changes.
+     */
+    let builtWidth = 0;
+    let builtHeight = 0;
+    let builtCellPx = 0;
+
+    const applyCanvasSize = (w: number, h: number) => {
+      width = w;
+      height = h;
       canvas.width = Math.floor(width * dpr);
       canvas.height = Math.floor(height * dpr);
       canvas.style.width = width + "px";
       canvas.style.height = height + "px";
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       ctx.imageSmoothingEnabled = false;
+    };
+
+    const shiftStopsY = (list: Stop[], dy: number) => {
+      if (dy === 0) return;
+      for (let i = 0; i < list.length; i++) list[i].oy += dy;
+    };
+
+    const resize = (forceRebuild = false) => {
+      const parent = canvas.parentElement!;
+      const nextW = parent.clientWidth;
+      const nextH = parent.clientHeight;
+      if (nextW < 1 || nextH < 1) return;
+
+      let targetCell = 14;
+      if (nextW < 480) targetCell = 6;
+      else if (nextW < 768) targetCell = 9;
+      else if (nextW < 1024) targetCell = 12;
+      else targetCell = 15;
+      const nextCell = Math.max(cellMin, Math.min(cellMax, targetCell));
+
+      const widthChanged = Math.abs(nextW - builtWidth) >= 1;
+      const cellChanged = nextCell !== builtCellPx;
+      const firstBuild = builtWidth === 0;
+      const needsRebuild =
+        forceRebuild || firstBuild || widthChanged || cellChanged;
+
+      if (!needsRebuild) {
+        /* Height-only (mobile chrome): keep glyphs, re-center vertically. */
+        const dy = (nextH - builtHeight) / 2;
+        applyCanvasSize(nextW, nextH);
+        shiftStopsY(inner, dy);
+        shiftStopsY(edge, dy);
+        builtHeight = nextH;
+        draw();
+        return;
+      }
+
+      cellPx = nextCell;
+      applyCanvasSize(nextW, nextH);
       sparks.length = 0;
       waves.length = 0;
       confetti.length = 0;
-      buildMaskAndStops();
+      buildMaskAndStops(!firstBuild);
+      builtWidth = nextW;
+      builtHeight = nextH;
+      builtCellPx = nextCell;
       draw();
     };
 
@@ -898,6 +930,18 @@ export default function AsciiWordmark({
       }
     };
 
+    /* Catch layout shifts; height-only mobile chrome won't rebuild the mask. */
+    let ro: ResizeObserver | null = null;
+    let roTimer = 0;
+    if (typeof ResizeObserver !== "undefined") {
+      ro = new ResizeObserver(() => {
+        window.clearTimeout(roTimer);
+        roTimer = window.setTimeout(() => resize(), 50);
+      });
+      const el = trackEl();
+      if (el) ro.observe(el);
+    }
+
     const parent = trackEl();
     parent?.addEventListener("pointermove", onPointerMove, { passive: true });
     parent?.addEventListener("pointerleave", onPointerLeave);
@@ -906,6 +950,8 @@ export default function AsciiWordmark({
     return () => {
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
       window.removeEventListener("resize", onResize);
+      window.clearTimeout(roTimer);
+      ro?.disconnect();
       reducedMQ.removeEventListener("change", onReducedChange);
       parent?.removeEventListener("pointermove", onPointerMove);
       parent?.removeEventListener("pointerleave", onPointerLeave);
