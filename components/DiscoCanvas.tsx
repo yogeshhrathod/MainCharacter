@@ -242,19 +242,35 @@ export default function DiscoCanvas({ active }: { active: boolean }) {
       ctx.globalCompositeOperation = "source-over";
     };
 
-    /* ── Loop ───────────────────────────────────────────────────── */
+    /* ── Loop — idle when party fully off ───────────────────── */
     const loop = () => {
+      const target = activeRef.current ? 1 : 0;
+      const idle = target === 0 && progress <= 0.002;
+      if (idle) {
+        ctx.clearRect(0, 0, width, height);
+        raf = 0;
+        return;
+      }
       frame++;
       draw();
       raf = requestAnimationFrame(loop);
     };
 
+    const kick = () => {
+      if (!raf) raf = requestAnimationFrame(loop);
+    };
+
     window.addEventListener("resize", resize);
     resize();
-    raf = requestAnimationFrame(loop);
+    kick();
+
+    const watch = window.setInterval(() => {
+      if (activeRef.current && !raf) kick();
+    }, 200);
 
     return () => {
       cancelAnimationFrame(raf);
+      window.clearInterval(watch);
       window.removeEventListener("resize", resize);
     };
   }, []);
@@ -262,6 +278,7 @@ export default function DiscoCanvas({ active }: { active: boolean }) {
   return (
     <canvas
       ref={canvasRef}
+      aria-hidden="true"
       className="absolute inset-0 w-full h-full pointer-events-none"
     />
   );

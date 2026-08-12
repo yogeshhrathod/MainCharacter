@@ -4,7 +4,7 @@ import { useState } from "react";
 import Header from "@/components/Header";
 import AsciiWordmark from "@/components/AsciiWordmark";
 import DiscoCanvas from "@/components/DiscoCanvas";
-import DiscoDancer from "@/components/DiscoDancer";
+import StageCue from "@/components/StageCue";
 import { WORDMARK_LINES } from "@/components/scene";
 
 export default function Hero() {
@@ -15,6 +15,8 @@ export default function Hero() {
       id="top"
       className="relative isolate min-h-[100svh] w-full overflow-hidden bg-[var(--hero-bg)] text-[var(--hero-fg)]"
     >
+      <h1 className="sr-only">Main Character — product and service studio</h1>
+
       {/* ── Cinematic stage lights — fade out when party takes over ─ */}
       <div
         className="absolute inset-0 pointer-events-none"
@@ -24,44 +26,28 @@ export default function Hero() {
           transition: party ? "opacity 2s ease 1s" : "opacity 1.5s ease",
         }}
       >
-        {/* Warm overhead key light */}
         <div
           className="absolute inset-0"
-          style={{
-            background: "var(--hero-stage-key)",
-          }}
+          style={{ background: "var(--hero-stage-key)" }}
         />
-        {/* Soft center fill */}
         <div
           className="absolute inset-0"
-          style={{
-            background: "var(--hero-stage-fill)",
-          }}
+          style={{ background: "var(--hero-stage-fill)" }}
         />
-        {/* Cool blue ambient from below */}
         <div
           className="absolute inset-0"
-          style={{
-            background: "var(--hero-stage-low)",
-          }}
+          style={{ background: "var(--hero-stage-low)" }}
         />
-        {/* Side rim lights */}
         <div
           className="absolute inset-0"
-          style={{
-            background: "var(--hero-stage-rim)",
-          }}
+          style={{ background: "var(--hero-stage-rim)" }}
         />
-        {/* Anamorphic lens sheen */}
         <div
           className="absolute inset-0"
-          style={{
-            background: "var(--hero-stage-sheen)",
-          }}
+          style={{ background: "var(--hero-stage-sheen)" }}
         />
       </div>
 
-      {/* Vignette — slightly eased in party mode to let disco colors breathe */}
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
@@ -71,7 +57,6 @@ export default function Hero() {
         }}
       />
 
-      {/* Film grain overlay */}
       <svg
         className="absolute inset-0 h-full w-full pointer-events-none opacity-[0.14] mix-blend-overlay"
         aria-hidden="true"
@@ -89,7 +74,6 @@ export default function Hero() {
         <rect width="100%" height="100%" filter="url(#hero-grain)" />
       </svg>
 
-      {/* ── Disco canvas — full scene: bg tint, floor, beams, dots ─ */}
       <DiscoCanvas active={party} />
 
       <div
@@ -103,41 +87,40 @@ export default function Hero() {
 
       <Header />
 
-      {/* ── Full-screen ASCII Grid and Wordmark ── */}
       <div className="absolute inset-0 z-0">
-        <AsciiWordmark lines={WORDMARK_LINES} cellMin={6} cellMax={16} partyMode={party} />
+        <AsciiWordmark
+          lines={WORDMARK_LINES}
+          cellMin={6}
+          cellMax={16}
+          partyMode={party}
+        />
       </div>
 
-      <div className="absolute inset-x-5 bottom-40 z-20 flex justify-center sm:bottom-44 md:bottom-36">
-        <div className="flex max-w-sm flex-col items-center gap-4 text-center sm:max-w-xl">
-          <p className="font-display text-lg leading-tight tracking-tight text-[var(--hero-muted)] sm:text-xl md:text-3xl">
-            Product and service company building AI-first experiences, sharp
-            interfaces, and digital products that know how to hold attention.
-          </p>
-          <div className="flex w-full flex-col gap-3 rounded-[28px] border border-[var(--hero-panel-border)] bg-[var(--hero-panel)] p-2 backdrop-blur-md sm:w-auto sm:flex-row sm:items-center sm:justify-center">
-            <a
-              href="#work"
-              className="w-full rounded-full bg-[var(--hero-primary-bg)] px-6 py-3 text-center font-mono text-[11px] uppercase tracking-[0.2em] text-[var(--hero-primary-fg)] transition opacity-95 hover:opacity-100 sm:w-auto"
-            >
-              View work
-            </a>
-            <a
-              href="mailto:founder@maincharacter.one"
-              className="w-full rounded-full border border-[var(--hero-panel-border)] bg-[var(--hero-secondary-bg)] px-6 py-3 text-center font-mono text-[11px] uppercase tracking-[0.2em] text-[var(--hero-fg)] transition hover:border-[var(--hero-soft)] sm:w-auto"
-            >
-              Start a project
-            </a>
-          </div>
-        </div>
+      {/* Compact CTAs — left, clear of the wordmark center */}
+      <div className="absolute bottom-28 left-5 z-20 flex flex-col gap-2 sm:bottom-24 sm:left-6 md:bottom-28 md:left-10">
+        <a
+          href="#contact"
+          className="inline-flex w-fit items-center justify-center rounded-full bg-[var(--hero-primary-bg)] px-5 py-2.5 font-mono text-[10px] uppercase tracking-[0.2em] text-[var(--hero-primary-fg)] transition opacity-95 hover:opacity-100 sm:text-[11px]"
+        >
+          Start a project
+        </a>
+        <a
+          href="#work"
+          className="inline-flex w-fit items-center justify-center rounded-full border border-[var(--hero-panel-border)] bg-[var(--hero-secondary-bg)] px-5 py-2.5 font-mono text-[10px] uppercase tracking-[0.2em] text-[var(--hero-fg)] backdrop-blur-md transition hover:border-[var(--hero-soft)] sm:text-[11px]"
+        >
+          View work
+        </a>
       </div>
 
-      {/* ── Disco dancer ──────────────────────────────────────────── */}
-      <div className="absolute bottom-20 left-1/2 z-20 flex -translate-x-1/2 flex-col items-center gap-3 sm:bottom-24 md:bottom-24">
-        <DiscoDancer party={party} />
+      <div className="absolute bottom-[5.5rem] left-1/2 z-20 hidden -translate-x-1/2 flex-col items-center sm:bottom-24 sm:flex md:bottom-24">
+        <StageCue party={party} />
       </div>
 
-      <div className="absolute right-5 bottom-18 z-20 sm:right-6 sm:bottom-24 md:right-10 md:bottom-16">
+      <div className="absolute right-5 bottom-20 z-20 sm:right-6 sm:bottom-24 md:right-10 md:bottom-16">
         <button
+          type="button"
+          aria-pressed={party}
+          aria-label={party ? "End party mode" : "Start party mode"}
           onClick={() => setParty((v) => !v)}
           className="group inline-flex items-center gap-3 rounded-full border border-[var(--hero-panel-border)] bg-[var(--hero-secondary-bg)] px-3 py-2 backdrop-blur-md transition hover:border-[var(--hero-soft)]"
           style={
@@ -162,16 +145,16 @@ export default function Hero() {
         </button>
       </div>
 
-      <div className="absolute right-5 bottom-5 left-5 z-20 hidden grid-cols-1 gap-2 sm:right-6 sm:bottom-8 sm:left-6 sm:grid md:right-10 md:bottom-10 md:left-10 md:grid-cols-12 md:gap-8">
+      <div className="absolute right-5 bottom-5 left-5 z-20 grid grid-cols-1 gap-2 sm:right-6 sm:bottom-8 sm:left-6 sm:grid-cols-2 md:right-10 md:bottom-10 md:left-10 md:grid-cols-12 md:gap-8">
         <div className="md:col-span-4">
-          <p className="font-mono text-[10px] leading-snug tracking-[0.18em] uppercase sm:text-[11px] md:text-xs">
+          <p className="font-mono text-[10px] leading-snug tracking-[0.18em] uppercase text-[var(--hero-muted)] sm:text-[11px] md:text-xs md:text-[var(--hero-fg)]">
             Service &amp; Product
             <br />
             Studio.
           </p>
         </div>
         <div className="md:col-span-8 md:text-right">
-          <p className="font-mono text-[10px] leading-snug tracking-[0.18em] uppercase sm:text-[11px] md:text-xs">
+          <p className="font-mono text-[10px] leading-snug tracking-[0.18em] uppercase text-[var(--hero-muted)] sm:text-[11px] md:text-xs md:text-[var(--hero-fg)]">
             Ai products. Ai design. Business with main character energy.
           </p>
         </div>

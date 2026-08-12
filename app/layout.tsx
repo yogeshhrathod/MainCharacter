@@ -1,17 +1,11 @@
 import type { Metadata, Viewport } from "next";
-import { VT323, Inter, Outfit, JetBrains_Mono } from "next/font/google";
+import { VT323, Outfit, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 
 const pixel = VT323({
   weight: "400",
   subsets: ["latin"],
   variable: "--font-pixel",
-  display: "swap",
-});
-
-const sans = Inter({
-  subsets: ["latin"],
-  variable: "--font-sans",
   display: "swap",
 });
 
@@ -62,12 +56,21 @@ export const metadata: Metadata = {
     description:
       "A product and service company building AI-first products, interfaces, and business experiences with standout presence.",
     locale: "en_US",
+    images: [
+      {
+        url: "/og.png",
+        width: 1200,
+        height: 630,
+        alt: "Main Character — product and service studio",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "Main Character — Services & Products",
     description:
       "A product and service company building AI-first products, interfaces, and business experiences with standout presence.",
+    images: ["/og.png"],
   },
   robots: {
     index: true,
@@ -97,10 +100,11 @@ const orgJsonLd = {
   "@type": "Organization",
   name: "Main Character",
   url: SITE_URL,
-  email: "founder@maincharacter.one",
+  email: "hello@maincharacter.one",
   description:
     "A product and service company building AI-first products, interfaces, and business experiences with standout presence.",
   sameAs: [],
+  logo: `${SITE_URL}/favicon.svg`,
 };
 
 const themeScript = `
@@ -126,7 +130,7 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${pixel.variable} ${mono.variable} ${sans.variable} ${display.variable}`}
+      className={`${pixel.variable} ${mono.variable} ${display.variable}`}
     >
       <body className="min-h-dvh antialiased">
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
@@ -134,9 +138,13 @@ export default function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(orgJsonLd) }}
         />
-        <main className="min-h-dvh">
-          {children}
-        </main>
+        <a
+          href="#work"
+          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[10000] focus:bg-ink focus:px-4 focus:py-2 focus:font-mono focus:text-xs focus:uppercase focus:tracking-[0.18em] focus:text-paper"
+        >
+          Skip to content
+        </a>
+        {children}
       </body>
     </html>
   );

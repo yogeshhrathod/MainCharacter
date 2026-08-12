@@ -9,7 +9,12 @@ export default function HomePage() {
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    if (window.sessionStorage.getItem("main-character:intro-seen") === "1") {
+    const seen =
+      window.sessionStorage.getItem("main-character:intro-seen") === "1";
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)")
+      .matches;
+    if (seen || reduced) {
+      window.sessionStorage.setItem("main-character:intro-seen", "1");
       setLoaded(true);
     }
   }, []);

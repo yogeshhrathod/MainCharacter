@@ -12,6 +12,7 @@ const NAV_LEFT = [
 const NAV_MID = [
   { href: "#services", label: "Services" },
   { href: "#products", label: "Products" },
+  { href: "#contact", label: "Contact" },
 ];
 
 export default function Header() {
@@ -59,10 +60,10 @@ export default function Header() {
             Service &amp; Product Studio
           </p>
           <a
-            href="mailto:founder@maincharacter.one"
+            href="mailto:hello@maincharacter.one"
             className="block font-mono text-[11px] tracking-[0.18em] uppercase hover:opacity-60"
           >
-            founder@maincharacter.one
+            hello@maincharacter.one
           </a>
           <ThemeToggle />
         </div>
@@ -72,6 +73,7 @@ export default function Header() {
           <button
             aria-label={open ? "Close menu" : "Open menu"}
             aria-expanded={open}
+            aria-controls="mobile-nav"
             onClick={() => setOpen((v) => !v)}
             className="font-mono text-[11px] tracking-[0.18em] uppercase"
           >
@@ -81,7 +83,10 @@ export default function Header() {
       </div>
 
       {open && (
-        <div className="border-t border-[var(--hero-panel-border)] bg-[var(--hero-panel-strong)] px-5 py-6 backdrop-blur md:hidden">
+        <div
+          id="mobile-nav"
+          className="border-t border-[var(--hero-panel-border)] bg-[var(--hero-panel-strong)] px-5 py-6 backdrop-blur md:hidden"
+        >
           <ul className="space-y-3 font-mono text-xs tracking-[0.18em] uppercase">
             {[...NAV_LEFT, ...NAV_MID].map((i) => (
               <li key={i.href}>
@@ -96,10 +101,10 @@ export default function Header() {
             ))}
             <li className="pt-2">
               <a
-                href="mailto:founder@maincharacter.one"
+                href="mailto:hello@maincharacter.one"
                 className="hover:opacity-60"
               >
-                founder@maincharacter.one
+                hello@maincharacter.one
               </a>
             </li>
           </ul>

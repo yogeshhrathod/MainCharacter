@@ -3,9 +3,8 @@
 import { useEffect, useRef } from "react";
 import { PARTY_SEQUENCE, WORDMARK_LINES } from "@/components/scene";
 
-const ASCII_CHARS = Array.from({ length: 94 }, (_, i) =>
-  String.fromCharCode(33 + i)
-).join("");
+/* Dense glyphs only — sparse punctuation leaves holes that break the wordmark. */
+const ASCII_CHARS = "#@$%&8BMWQHXN0Z*+=ABDEGHKMPRSUVWY2345679";
 
 const FIRE_CHARS = "^*!|.,~'`+";
 const EMBER_CHARS = "@#$%&*!?^~|<>";
@@ -146,7 +145,7 @@ export default function AsciiWordmark({
       let best = lo;
       while (lo <= hi) {
         const mid = Math.floor((lo + hi) / 2);
-        octx.font = `900 ${mid}px "Inter", system-ui, sans-serif`;
+        octx.font = `900 ${mid}px "Outfit", system-ui, sans-serif`;
         const w = octx.measureText(text).width;
         if (w <= maxW * 0.99 && mid <= maxH * 1.15) { best = mid; lo = mid + 1; }
         else hi = mid - 1;
@@ -184,7 +183,7 @@ export default function AsciiWordmark({
 
       lines.forEach((line, i) => {
         const fs = fontSizes[i];
-        octx.font = `900 ${fs}px "Inter", system-ui, sans-serif`;
+        octx.font = `900 ${fs}px "Outfit", system-ui, sans-serif`;
         octx.fillText(line, width / 2, y + lineHeights[i] * 0.94);
         y += lineHeights[i] + gap;
       });
@@ -229,7 +228,7 @@ export default function AsciiWordmark({
             edge: isEdge,
             interval,
             next: Math.floor(Math.random() * interval),
-            spawnHold: Math.floor(Math.random() * 72),
+            spawnHold: Math.floor(Math.random() * 18),
             spawnFade: 0,
             px: 0, py: 0,
             vx: 0, vy: 0,
@@ -243,10 +242,8 @@ export default function AsciiWordmark({
           });
 
           if (isEdge) {
-            if (Math.random() < 0.18) continue;
             edge.push(makeStop(4 + Math.floor(Math.random() * 18)));
           } else {
-            if (Math.random() < 0.02) continue;
             const r1 = Math.random();
             let iv: number;
             if (r1 < 0.55) iv = 60 + Math.floor(Math.random() * 120);

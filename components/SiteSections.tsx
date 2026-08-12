@@ -1,17 +1,55 @@
 import Image from "next/image";
+import ContactForm from "@/components/ContactForm";
+import SiteFooter from "@/components/SiteFooter";
 
 const work = [
   {
-    title: "AI Product Design",
-    body: "We shape AI-first products that feel useful, legible, and confident from the first interaction.",
+    title: "Luna",
+    role: "AI product · brand · launch UI",
+    problem:
+      "Needed a fast, opinionated AI product surface that felt distinct on first contact—not another generic dashboard.",
+    outcome:
+      "Shipped a live product with a sharp visual signature, clear interaction model, and velocity-first packaging.",
+    href: "https://luna.wesparkvault.com/",
+    linkLabel: "View Luna",
   },
   {
-    title: "Service Systems",
-    body: "We turn service-heavy businesses into cleaner journeys, clearer offers, and stronger digital touchpoints.",
+    title: "Scooty",
+    role: "Product direction · motion · interface",
+    problem:
+      "Required a warmer, more minimal product direction that still felt intentional and commercially ready.",
+    outcome:
+      "Launched a brighter product system with motion, clarity, and a tone that stands apart from Luna while sharing the same execution bar.",
+    href: "https://scooty.wesparkvault.com/",
+    linkLabel: "View Scooty",
   },
   {
-    title: "Launch-Ready Interfaces",
-    body: "From product structure to final UI, we build surfaces that feel polished, practical, and business-ready.",
+    title: "Service systems",
+    role: "Studio focus · journeys · offers",
+    problem:
+      "Service-heavy businesses often bury the offer under process noise, weak digital touchpoints, and safe design.",
+    outcome:
+      "We restructure journeys, sharpen the offer, and build digital surfaces that make the business feel lead—not background.",
+    href: "#contact",
+    linkLabel: "Start a project",
+  },
+];
+
+const process = [
+  {
+    step: "01",
+    title: "Discover",
+    body: "Clarify audience, offer, constraints, and what “main character” means for the business.",
+  },
+  {
+    step: "02",
+    title: "Shape",
+    body: "Structure the product or service system, AI UX, and interface language before pixels get precious.",
+  },
+  {
+    step: "03",
+    title: "Ship",
+    body: "Build launch-ready surfaces, tighten the story, and leave you with something that holds attention in market.",
   },
 ];
 
@@ -31,13 +69,15 @@ const products = [
     title: "Luna",
     href: "https://luna.wesparkvault.com/",
     image: "/products/luna-logo.png",
-    body: "A product built with velocity, personality, and a distinctive visual signature. Fast, direct, and made to stand out.",
+    body: "Velocity, personality, and a distinctive visual signature. Fast, direct, and made to stand out.",
+    note: "Live product",
   },
   {
     title: "Scooty",
     href: "https://scooty.wesparkvault.com/",
     image: "/products/scooty-logo.png",
-    body: "A brighter, more minimal product direction with motion, warmth, and clear intent. Different tone, same sharp execution.",
+    body: "Brighter, minimal direction with motion, warmth, and clear intent. Different tone, same sharp execution.",
+    note: "Live product",
   },
 ];
 
@@ -52,6 +92,7 @@ export default function SiteSections() {
             "linear-gradient(to bottom, var(--hero-bg) 0%, color-mix(in srgb, var(--hero-bg) 35%, var(--color-paper)) 42%, var(--color-paper) 100%)",
         }}
       />
+
       <section
         id="work"
         className="scroll-mt-24 px-5 pt-10 pb-16 sm:px-6 sm:pt-[5.5rem] sm:pb-20 md:px-10 md:pt-[7.5rem] md:pb-28"
@@ -59,23 +100,54 @@ export default function SiteSections() {
         <div className="mx-auto grid max-w-7xl gap-10 md:grid-cols-12">
           <div className="md:col-span-4">
             <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-mute">
-              Selected focus
+              Work
             </p>
             <h2 className="mt-4 max-w-xs font-display text-3xl leading-[0.98] tracking-tight md:text-5xl">
-              We build products and services that act like the main character.
+              Shipped products and systems built to lead.
             </h2>
           </div>
 
-          <div className="grid gap-3 sm:grid-cols-2 md:col-span-8 md:grid-cols-3">
+          <div className="grid gap-3 md:col-span-8">
             {work.map((item) => (
               <article
                 key={item.title}
-                className="border border-line bg-surface p-5 transition-transform duration-300 hover:-translate-y-1"
+                className="border border-line bg-surface p-5 sm:p-6"
               >
-                <h3 className="font-display text-xl tracking-tight">
-                  {item.title}
-                </h3>
-                <p className="mt-4 text-sm leading-6 text-mute">{item.body}</p>
+                <div className="flex flex-wrap items-baseline justify-between gap-3">
+                  <h3 className="font-display text-2xl tracking-tight">
+                    {item.title}
+                  </h3>
+                  <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-mute">
+                    {item.role}
+                  </p>
+                </div>
+                <div className="mt-5 grid gap-4 sm:grid-cols-2">
+                  <div>
+                    <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-mute">
+                      Problem
+                    </p>
+                    <p className="mt-2 text-sm leading-6 text-mute">
+                      {item.problem}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-mute">
+                      Outcome
+                    </p>
+                    <p className="mt-2 text-sm leading-6 text-mute">
+                      {item.outcome}
+                    </p>
+                  </div>
+                </div>
+                <a
+                  href={item.href}
+                  {...(item.href.startsWith("http")
+                    ? { target: "_blank", rel: "noreferrer" }
+                    : {})}
+                  className="mt-5 inline-flex font-mono text-[11px] uppercase tracking-[0.2em] underline-offset-4 hover:underline"
+                >
+                  {item.linkLabel}
+                </a>
               </article>
             ))}
           </div>
@@ -97,11 +169,25 @@ export default function SiteSections() {
           </div>
 
           <div className="md:col-span-8">
-            <div className="grid gap-px overflow-hidden border border-line bg-line sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-3 sm:grid-cols-3">
+              {process.map((item) => (
+                <div key={item.step} className="border border-line bg-surface p-5">
+                  <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-mute">
+                    {item.step}
+                  </p>
+                  <h3 className="mt-3 font-display text-xl tracking-tight">
+                    {item.title}
+                  </h3>
+                  <p className="mt-3 text-sm leading-6 text-mute">{item.body}</p>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-3 grid gap-px overflow-hidden border border-line bg-line sm:grid-cols-2 lg:grid-cols-4">
               {services.map((service) => (
                 <div
                   key={service}
-                  className="bg-paper px-5 py-6 font-mono text-xs uppercase tracking-[0.2em]"
+                  className="bg-paper px-5 py-5 font-mono text-[11px] uppercase tracking-[0.18em]"
                 >
                   {service}
                 </div>
@@ -121,7 +207,7 @@ export default function SiteSections() {
               Products
             </p>
             <h2 className="mt-4 max-w-sm font-display text-3xl leading-[0.98] tracking-tight md:text-5xl">
-              Real products. Real signals. Not placeholder case studies.
+              Real products. Live signals.
             </h2>
           </div>
 
@@ -134,7 +220,7 @@ export default function SiteSections() {
                 rel="noreferrer"
                 className="group border border-line bg-surface p-4 transition-transform duration-300 hover:-translate-y-1 sm:p-6"
               >
-                <div className="relative overflow-hidden rounded-2xl border border-line/70 bg-product">
+                <div className="relative overflow-hidden border border-line/70 bg-product">
                   <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.28),rgba(240,230,220,0.18),transparent_72%)]" />
                   <div className="relative aspect-square">
                     <Image
@@ -152,7 +238,7 @@ export default function SiteSections() {
                     {item.title}
                   </h3>
                   <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-mute transition group-hover:text-ink">
-                    Open
+                    {item.note}
                   </span>
                 </div>
                 <p className="mt-4 max-w-md text-sm leading-6 text-mute">
@@ -191,26 +277,31 @@ export default function SiteSections() {
         </div>
       </section>
 
-      <section className="border-t border-line px-5 py-16 sm:px-6 sm:py-20 md:px-10 md:py-24">
-        <div className="mx-auto flex max-w-7xl flex-col gap-6 md:flex-row md:items-end md:justify-between">
-          <div>
+      <section
+        id="contact"
+        className="scroll-mt-24 border-t border-line px-5 py-16 sm:px-6 sm:py-20 md:px-10 md:py-28"
+      >
+        <div className="mx-auto grid max-w-7xl gap-10 md:grid-cols-12">
+          <div className="md:col-span-5">
             <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-mute">
               Start a project
             </p>
-            <h2 className="mt-4 max-w-2xl font-display text-3xl leading-[0.98] tracking-tight md:text-5xl">
+            <h2 className="mt-4 max-w-xl font-display text-3xl leading-[0.98] tracking-tight md:text-5xl">
               If your business should feel more iconic, more useful, and more
               impossible to ignore, let&apos;s build it.
             </h2>
+            <p className="mt-6 max-w-md text-sm leading-6 text-mute">
+              Tell us what you&apos;re building. The form opens your email app
+              with a ready message—no accounts, no third-party widgets.
+            </p>
           </div>
-
-          <a
-            href="mailto:founder@maincharacter.one"
-            className="inline-flex w-fit items-center justify-center border border-ink bg-ink px-5 py-3 font-mono text-xs uppercase tracking-[0.2em] text-paper transition hover:bg-transparent hover:text-ink"
-          >
-            Start a project
-          </a>
+          <div className="md:col-span-7">
+            <ContactForm />
+          </div>
         </div>
       </section>
+
+      <SiteFooter />
     </div>
   );
 }

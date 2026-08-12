@@ -12,11 +12,23 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "monthly",
       priority: 1,
     },
+    {
+      url: `${SITE_URL}/privacy`,
+      lastModified: new Date(),
+      changeFrequency: "yearly",
+      priority: 0.4,
+    },
+    {
+      url: `${SITE_URL}/terms`,
+      lastModified: new Date(),
+      changeFrequency: "yearly",
+      priority: 0.4,
+    },
     ...["privacy", "terms", "support"].map((page) => ({
       url: `${SITE_URL}/backstage/${page}`,
       lastModified: new Date(),
       changeFrequency: "yearly" as const,
-      priority: 0.5,
+      priority: 0.2,
     })),
   ];
 }

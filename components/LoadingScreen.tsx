@@ -182,6 +182,9 @@ export default function LoadingScreen({
 
   return (
     <div
+      role="dialog"
+      aria-modal="true"
+      aria-label="Intro"
       className="fixed inset-0 overflow-hidden"
       style={{
         zIndex: 9999,
@@ -200,6 +203,7 @@ export default function LoadingScreen({
       {/* Rain */}
       <canvas
         ref={rainRef}
+        aria-hidden="true"
         className="absolute inset-0 w-full h-full"
         style={{
           opacity: rainVisible ? 1 : 0,
